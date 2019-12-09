@@ -45,25 +45,45 @@ void MyViewer::add_model(SnShape* s, GsVec p)
 	m.translation(p);
 	manip->initial_mat(m);
 
+	//This is how we make shadow
+	//How we achieved is by flattening the copy of the original obj
+	//ComputeShadow() gives us position where the shadow might be in a matrix
+	//After that, the process is same as a normal objects in this code
+	//So if we make an object and add it using this function...
+	//Its gonna make that object, and its shadow... So two objects
+
+	//If u want to edit the first object, you would call it like this...
+	//	SnManipulator* firstObj = rootg()->get<SnManipulator>(0);  GsMat f = firstObj->mat();
+	//	and apply transformation and whaat not
+	// If u want to edit the second object that you added, u would have to call...
+	//SnManipulator* secondObj = rootg()->get<SnManipulator>(2); 
+
+	//2 instead of 1 because, rootg object at 1 is the shadow of the first object
+	//and rootg at 3 contains shadow of the second object.. and so on....
+
+
+
 	SnManipulator* shadow = new SnManipulator;
 	GsMat shad = computeShadow();
 	shad.rcombtrans(p);
-	//shad.translation(lightPos);
 	shadow->initial_mat(shad);
+
+
 	SnGroup* g = new SnGroup;
 	SnLines* l = new SnLines;
 	l->color(GsColor::orange);
 	g->add(s);
 	g->add(l);
 	manip->child(g);
-	shadow->child(g);
-	shadow->visible(false);
+	shadow->child(g); //child for shadow
+	shadow->visible(false); //No mouse interaction for shadow
 	manip->visible(false); // call this to turn off mouse interaction
 	rootg()->add(manip);
-	rootg()->add(shadow);
+	rootg()->add(shadow); //adding shadow to the root
 	
 
 }
+
 GsMat MyViewer::computeShadow()
 {
 	GsLight l;
@@ -83,6 +103,7 @@ GsMat MyViewer::computeShadow()
 	GsMat d = tr * s;
 	return d;
 }
+
 void MyViewer::build_scene()
 {
 	rootg()->remove_all();
