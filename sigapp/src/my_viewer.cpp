@@ -197,14 +197,22 @@ void MyViewer::build_scene()
 		//be->scale(15);
 		//add_model(bean, GsVec(x, y, z));	
 
-	}// This is not relevant
+	}
+	// This is not relevant
 
+	// the fish the player is
 	SnModel* playerFish = new SnModel;
 	playerFish->model()->load_obj("../reefObjs/PlayerFish/12990_Black_Moor_Goldfish_v1_l2.obj");
 	GsModel* pf = playerFish->model();
-
 	pf->scale(100);
 	add_model(playerFish, GsVec( x - 100, y - 100, z));
+
+	// NPC fishes
+	SnModel* fish0 = new SnModel;
+	fish0->model()->load_obj("../reefPbjs/Fish2/RB_TROUT.OBJ");
+	GsModel* f0 = fish0->model();
+	f0->scale(100);
+	add_model(fish0, GsVec(x + 100, y - 100, z + 100));
 }
 
 
