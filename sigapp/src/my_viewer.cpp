@@ -8,9 +8,10 @@
 
 # include <sigogl/ws_run.h>
 
-double x = 0.0;
-double y = 0.0;
-double z = 0.0;
+double px = 0.0;
+double py = 0.0;
+double pz = 0.0;
+double x, y, z = 0.0;
 double npcC[3][10]; // coordinates, X,Y,Z, i=0->9
 float degrees = (float)GS_PI / 180;
 GsVec lightPos = GsVec(0,-500,0);
@@ -224,16 +225,16 @@ void MyViewer::build_scene()
 	playerFish->model()->load_obj("../reefObjs/PlayerFish/blackMoorFish.obj");
 	GsModel* pf = playerFish->model();
 	pf->scale(scale);
-	add_model(playerFish, GsVec(x, y, z));
+	add_model(playerFish, GsVec(px, py, pz));
 
 	//Angel Fishes
 	// sets variables quickly because it needs to be done
 	for (int q = 0; q < 3; q++) {
 		for (int i = 0; i < 10; i ++){
-			npcC[q][i] = q * i * 100;
+			npcC[q][i] = (q * i * 100);
 		}
 	}
-
+	// makes the fishes
 	SnModel* af[10]; // the NPC fishes
 	GsModel* gsaf[10]; // NPC Fishes
 	for (int i = 0; i < 10; i++) {
@@ -243,14 +244,6 @@ void MyViewer::build_scene()
 		gsaf[i]->scale(scale);
 		add_model(af[i], GsVec(npcC[0][i], npcC[1][i], npcC[2][i]));
 	}
-
-	// INDIVIDUAL proof of concept fish
-	/*SnModel* aF = new SnModel;
-	aF->model()->load_obj("../reefObjs/angelFish/angelFish.obj");
-	GsModel* gsaF = aF->model();
-	gsaF->translate(GsVec(0, 5, -5));
-	gsaF->scale(scale);
-	add_model(aF, GsVec(x, y, z));*/
 
 	//Corals and such
 	// TableCoral/ Tree Corals = tc
@@ -379,108 +372,33 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 
 	switch (e.key)
 	{
-	case GsEvent::KeyEsc: gs_exit(); return 1;
-	default: gsout << "Key pressed: " << e.key << gsnl;
+		case GsEvent::KeyEsc: gs_exit(); return 1;
+		default: gsout << "Key pressed: " << e.key << gsnl;
 
-	case 'q':
-	{
-		
-		return 1;
-	}
-	case 'a':
-	{
-		
-		return 1;
-	}
-
-
-	case 'w':
-	{
-		
-		return 1;
-	}
-
-	case 's':
-	{
-		
-		//message().setf("leftaramcntr=%f", leftarmcntr);
-		return 1;
-	}
-
-	case 'e':
-	{
-		
-		return 1;
-	}
-	case 'd':
-	{
-		
-		return 1;
-	}
-	case 'r':
-	{
-		
-		return 1;
-	}
-	case 'f':
-	{
-		
-		
-		return 1;
-	}
-	case 'z':
-	{
-		
-		return 1;
-	}
-	case 'x':
-	{
-		
-		return 1;
-	}
-
-	case GsEvent::KeyLeft:
-	{
-		
-		return 1;
-	}
-	case GsEvent::KeyUp:
-	{
-		
-		return 1;
-	}
-
-	case GsEvent::KeyRight:
-	{
-		
-		return 1;
-	}
-
-	case GsEvent::KeyDown:
-	{
-		
-		return 1;
-	}
-
-	case GsEvent::KeySpace:
-	{
-		double lt, t0 = gs_time();
-		do
-		{
-			lt = gs_time() - t0;
-
-			//camera().eye.x += 1.0f;
-			camera().eye.y += 2.5f;
-			camera().eye.z -= 3.0f;
-			//camera().center.y += 1.0f;
-			//camera().center.x += 1.0f;
-
-			camera().up.z += 0.001f;
-			render();
-			ws_check();
-			message().setf("local time=%f", lt);
-		} while (lt < 1.5f);
-	}
+		case 'w':{ // +X
+			px += 0.1;
+			return 1;
+		}
+		case 's':{ // -X
+			px -= 0.1;
+			return 1;
+		}
+		case 'd':{ // +Y
+			py += 0.1;
+			return 1;
+		}
+		case 'a': { // -Y
+			py -= 0.1;
+			return 1;
+		}
+		case GsEvent::KeySpace:{ // +Z
+			pz += 0.1;
+			return 1;
+		}
+		case GsEvent::KeyShift: { // -Z
+			pz -= 0.1;
+			return 1;
+		}
 	}
 
 	return 0;
