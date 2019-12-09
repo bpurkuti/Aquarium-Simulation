@@ -108,8 +108,9 @@ GsMat MyViewer::computeShadow()
 void MyViewer::build_scene()
 {
 	rootg()->remove_all();
-
-	// This is not relevant
+	
+	{
+		// This is not relevant
 		////Floor
 		//SnPrimitive* p;
 		//p = new SnPrimitive(GsPrimitive::Box, 45, 0.5, 45);
@@ -214,16 +215,27 @@ void MyViewer::build_scene()
 		//be->translate(GsVec(60, -45, -40));
 		//be->scale(15);
 		//add_model(bean, GsVec(x, y, z));	
-
+	}
 	//New Code
 
+	// the fish that is controled by player
 	SnModel* playerFish = new SnModel;
 	playerFish->model()->load_obj("../reefObjs/PlayerFish/blackMoorFish.obj");
 	GsModel* pf = playerFish->model();
 	pf->scale(scale);
 	add_model(playerFish, GsVec(x, y, z));
 
-	//Angel Fish
+	//Angel Fishes
+	SnModel* af[10]; // the NPC fishes
+	GsModel* gsaf[10]; // NPC Fishes
+	for (int i = 0; i < 10; i++) {
+		af[i] = new SnModel;
+		af[i]->model()->load_obj("../reefObjs/angelFish/angelFish.obj");
+		gsaf[i] = af[i]->model();
+		gsaf[i]->scale(scale);
+		add_model(af[i], GsVec(x + (100 * i), y + (100 * i), z + (100 * i)));
+	}
+
 	SnModel* aF = new SnModel;
 	aF->model()->load_obj("../reefObjs/angelFish/angelFish.obj");
 	GsModel* gsaF = aF->model();
