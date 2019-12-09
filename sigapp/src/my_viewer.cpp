@@ -91,118 +91,127 @@ GsMat MyViewer::computeShadow()
 void MyViewer::build_scene()
 {
 	rootg()->remove_all();
+	{
+		////Floor
+		//SnPrimitive* p;
+		//p = new SnPrimitive(GsPrimitive::Box, 45, 0.5, 45);
+		//p->prim().material.diffuse = GsColor::yellow;
+		//GsModel* d = p->model();
+		//d->translate(GsVec(0, -700, 0));
+		//d->scale(35);
+		//rootg()->add(p);
 
-	//Floor
-	SnPrimitive* p;
-	p = new SnPrimitive(GsPrimitive::Box, 45, 0.5, 45);
-	p->prim().material.diffuse = GsColor::yellow;
-	GsModel* d = p->model();
-	d->translate(GsVec(0, -700, 0));
-	d->scale(35);
-	rootg()->add(p);
+		////Right Leg
+		////load the obj to the model
+		////rotate the matrices and transform to change the alignment
+		////Translate to the proper place
+		////scale it to change the size
+		//SnModel* leg = new SnModel;
+		//leg->model()->load_obj("../objs/leg.obj");
+		//GsModel* o = leg->model();
+		//GsMat lmatz;
+		//lmatz.rotx(-100 * degrees);
+		//o->transform(lmatz, false);
+		//o->translate(GsVec(-15, -50, 0));
+		//o->scale(13);
+		//add_model(leg, GsVec(x, y, z));
 
-	//Right Leg
-	//load the obj to the model
-	//rotate the matrices and transform to change the alignment
-	//Translate to the proper place
-	//scale it to change the size
-	SnModel* leg = new SnModel;
-	leg->model()->load_obj("../objs/leg.obj");
-	GsModel* o = leg->model();
-	GsMat lmatz;
-	lmatz.rotx(-100 * degrees);
-	o->transform(lmatz, false);
-	o->translate(GsVec(-15, -50, 0));
-	o->scale(13);
-	add_model(leg, GsVec(x, y, z));
-
-	//Left Leg
-	//Same step as left leg
-	//I am mirroring the obj in x axis
-	//Using Identity matrix mirr and multiplying it to input matrix lrmatz, then transforming it
-	//The model appears black because I believe its turning it inside out, do not know how to fix it yet
-	SnModel* legr = new SnModel;
-	legr->model()->load_obj("../objs/leg.obj");
-	GsModel* lr = legr->model();
-	GsMat lrmatz;
-	GsMat mirr(-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-	lrmatz.rotx(-100 * degrees);
-	GsMat mirrmat = lrmatz * mirr;
-	lr->transform(mirrmat, false);
-	lr->translate(GsVec(13, -50, 0));
-	lr->scale(13);
-	add_model(legr, GsVec(x, y, z));
+		////Left Leg
+		////Same step as left leg
+		////I am mirroring the obj in x axis
+		////Using Identity matrix mirr and multiplying it to input matrix lrmatz, then transforming it
+		////The model appears black because I believe its turning it inside out, do not know how to fix it yet
+		//SnModel* legr = new SnModel;
+		//legr->model()->load_obj("../objs/leg.obj");
+		//GsModel* lr = legr->model();
+		//GsMat lrmatz;
+		//GsMat mirr(-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+		//lrmatz.rotx(-100 * degrees);
+		//GsMat mirrmat = lrmatz * mirr;
+		//lr->transform(mirrmat, false);
+		//lr->translate(GsVec(13, -50, 0));
+		//lr->scale(13);
+		//add_model(legr, GsVec(x, y, z));
 
 
-	//Torso
-	SnModel* torso = new SnModel;
-	torso->model()->load_obj("../objs/torso.obj");
-	GsModel* t = torso->model();
-	GsMat tmat;
-	tmat.rotx(-100 * degrees);
-	t->transform(tmat, false);
-	t->translate(GsVec(0, 50, -20));
-	t->scale(18);
-	add_model(torso, GsVec(x, y, z));
+		////Torso
+		//SnModel* torso = new SnModel;
+		//torso->model()->load_obj("../objs/torso.obj");
+		//GsModel* t = torso->model();
+		//GsMat tmat;
+		//tmat.rotx(-100 * degrees);
+		//t->transform(tmat, false);
+		//t->translate(GsVec(0, 50, -20));
+		//t->scale(18);
+		//add_model(torso, GsVec(x, y, z));
 
-	//Head
-	SnModel* head = new SnModel;
-	head->model()->load_obj("../objs/TheRock2.obj");
-	GsModel* h = head->model();
-	h->translate(GsVec(-15, 915, -210));
-	h->scale(2);
-	add_model(head, GsVec(x, y, z));
+		////Head
+		//SnModel* head = new SnModel;
+		//head->model()->load_obj("../objs/TheRock2.obj");
+		//GsModel* h = head->model();
+		//h->translate(GsVec(-15, 915, -210));
+		//h->scale(2);
+		//add_model(head, GsVec(x, y, z));
 
-	//Right Arm
-	SnModel* rarm = new SnModel;
-	rarm->model()->load_obj("../objs/arm.obj");
-	GsModel* rm = rarm->model();
-	GsMat ramat;
-	ramat.rotx(-100 * degrees);
-	rm->transform(ramat, false);
-	rm->translate(GsVec(-40, 60, -20));
-	rm->scale(15);
-	add_model(rarm, GsVec(x, y, z));
+		////Right Arm
+		//SnModel* rarm = new SnModel;
+		//rarm->model()->load_obj("../objs/arm.obj");
+		//GsModel* rm = rarm->model();
+		//GsMat ramat;
+		//ramat.rotx(-100 * degrees);
+		//rm->transform(ramat, false);
+		//rm->translate(GsVec(-40, 60, -20));
+		//rm->scale(15);
+		//add_model(rarm, GsVec(x, y, z));
 
-	////Left Arm
-	SnModel* larm = new SnModel;
-	larm->model()->load_obj("../objs/arm.obj");
-	GsModel* lm = larm->model();
-	GsMat lamat;
-	//I am going to use the same GsMat mirr
-	lamat.rotx(-100 * degrees);
-	GsMat mirr2mat = lamat * mirr;
-	lm->transform(mirr2mat, false);
-	lm->translate(GsVec(35, 60, -20));
-	lm->scale(15);
-	add_model(larm, GsVec(x, y, z));
+		//////Left Arm
+		//SnModel* larm = new SnModel;
+		//larm->model()->load_obj("../objs/arm.obj");
+		//GsModel* lm = larm->model();
+		//GsMat lamat;
+		////I am going to use the same GsMat mirr
+		//lamat.rotx(-100 * degrees);
+		//GsMat mirr2mat = lamat * mirr;
+		//lm->transform(mirr2mat, false);
+		//lm->translate(GsVec(35, 60, -20));
+		//lm->scale(15);
+		//add_model(larm, GsVec(x, y, z));
 
-	//objs
-	////heli
-	//SnModel* heli = new SnModel;
-	//heli->model()->load_obj("../objs/Heli_bell.obj");
-	//GsModel* he = heli->model();
-	//he->translate(GsVec(-20,-20,25));
-	//he->scale(35);
-	//add_model(heli, GsVec(x, y, z));
+		////objs
+		//////heli
+		////SnModel* heli = new SnModel;
+		////heli->model()->load_obj("../objs/Heli_bell.obj");
+		////GsModel* he = heli->model();
+		////he->translate(GsVec(-20,-20,25));
+		////he->scale(35);
+		////add_model(heli, GsVec(x, y, z));
 
-	//beanbag
-	SnModel* bean = new SnModel;
-	bean->model()->load_obj("../objs/beanbag.obj");
-	GsModel* be = bean->model();
-	GsMat bb;
-	bb.rotx(-100 * degrees);
-	be->transform(bb, false);
-	be->translate(GsVec(60, -45, -40));
-	be->scale(15);
-	add_model(bean, GsVec(x, y, z));	
+		////beanbag
+		//SnModel* bean = new SnModel;
+		//bean->model()->load_obj("../objs/beanbag.obj");
+		//GsModel* be = bean->model();
+		//GsMat bb;
+		//bb.rotx(-100 * degrees);
+		//be->transform(bb, false);
+		//be->translate(GsVec(60, -45, -40));
+		//be->scale(15);
+		//add_model(bean, GsVec(x, y, z));	
+
+	}// This is not relevant
 
 	SnModel* shell = new SnModel;
 	shell->model()->load_obj("../reefObjs/seashell_obj.obj");
 	GsModel* sh = shell->model();
 
-	sh->scale(100);
+	sh->scale(10);
 	add_model(shell, GsVec(x, y, z));
+
+	SnModel* shell2 = new SnModel;
+	shell2->model()->load_obj("../reefObjs/seashell_obj.obj");
+	GsModel* sh2 = shell2->model();
+
+	sh2->scale(10);
+	add_model(shell2, GsVec(x+10, y, z));
 }
 
 
