@@ -374,33 +374,42 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 	{
 		case GsEvent::KeyEsc: gs_exit(); return 1;
 		default: gsout << "Key pressed: " << e.key << gsnl;
-
+		
 		case 'w':{ // +X
-			px += 0.1;
+
 			return 1;
 		}
-		case 's':{ // -X
-			px -= 0.1;
+		case 'a':{ // -X
 			return 1;
 		}
-		case 'd':{ // +Y
-			py += 0.1;
+		case 's':{ // +Y
 			return 1;
 		}
-		case 'a': { // -Y
-			py -= 0.1;
+		case 'd':{ // -Y
 			return 1;
 		}
-		case GsEvent::KeySpace:{ // +Z
-			pz += 0.1;
+		case 'q':{ // +Z
 			return 1;
 		}
-		case GsEvent::KeyShift: { // -Z
-			pz -= 0.1;
+		case 'e': { // -Z
+			return 1;
+		}
+		case GsEvent::KeyLeft:{
+			return 1;
+		}
+		case GsEvent::KeyUp:{
+			return 1;
+		}
+		case GsEvent::KeyRight:{
+			return 1;
+		}
+		case GsEvent::KeyDown:{
+			return 1;
+		}
+		case GsEvent::KeySpace:{
 			return 1;
 		}
 	}
-
 	return 0;
 }
 
