@@ -375,23 +375,47 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 		case GsEvent::KeyEsc: gs_exit(); return 1;
 		default: gsout << "Key pressed: " << e.key << gsnl;
 		
+		// the commented thing are what cause the code to crash
 		case 'w':{ // +X
-
+			px += 0.1;
+			/*rootg()->remove_all();
+			build_scene();
+			render();*/
 			return 1;
 		}
 		case 'a':{ // -X
+			px -= 0.1;
+			/*rootg()->remove_all();
+			build_scene();
+			render();*/
 			return 1;
 		}
 		case 's':{ // +Y
+			py += 0.1;
+			/*rootg()->remove_all();
+			build_scene();
+			render();*/
 			return 1;
 		}
 		case 'd':{ // -Y
+			py -= 0.1;
+			/*rootg()->remove_all();
+			build_scene();
+			render();*/
 			return 1;
 		}
 		case 'q':{ // +Z
+			pz += 0.1;
+			/*rootg()->remove_all();
+			build_scene();
+			render();*/
 			return 1;
 		}
 		case 'e': { // -Z
+			pz -= 0.1;
+			/*rootg()->remove_all();
+			build_scene();
+			render();*/
 			return 1;
 		}
 		case GsEvent::KeyLeft:{
