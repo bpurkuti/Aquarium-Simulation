@@ -11,6 +11,7 @@
 double x = 0.0;
 double y = 0.0;
 double z = 0.0;
+double npcC[3][10]; // coordinates, X,Y,Z, i=0->9
 float degrees = (float)GS_PI / 180;
 GsVec lightPos = GsVec(0,-500,0);
 
@@ -226,6 +227,13 @@ void MyViewer::build_scene()
 	add_model(playerFish, GsVec(x, y, z));
 
 	//Angel Fishes
+	// sets variables quickly because it needs to be done
+	for (int q = 0; q < 3; q++) {
+		for (int i = 0; i < 10; i ++){
+			npcC[q][i] = q * i * 100;
+		}
+	}
+
 	SnModel* af[10]; // the NPC fishes
 	GsModel* gsaf[10]; // NPC Fishes
 	for (int i = 0; i < 10; i++) {
@@ -233,15 +241,16 @@ void MyViewer::build_scene()
 		af[i]->model()->load_obj("../reefObjs/angelFish/angelFish.obj");
 		gsaf[i] = af[i]->model();
 		gsaf[i]->scale(scale);
-		add_model(af[i], GsVec(x + (100 * i), y + (100 * i), z + (100 * i)));
+		add_model(af[i], GsVec(npcC[0][i], npcC[1][i], npcC[2][i]));
 	}
 
-	SnModel* aF = new SnModel;
+	// INDIVIDUAL proof of concept fish
+	/*SnModel* aF = new SnModel;
 	aF->model()->load_obj("../reefObjs/angelFish/angelFish.obj");
 	GsModel* gsaF = aF->model();
 	gsaF->translate(GsVec(0, 5, -5));
 	gsaF->scale(scale);
-	add_model(aF, GsVec(x, y, z));
+	add_model(aF, GsVec(x, y, z));*/
 
 	//Corals and such
 	// TableCoral/ Tree Corals = tc
