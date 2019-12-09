@@ -14,9 +14,10 @@ double z = 0.0;
 float degrees = (float)GS_PI / 180;
 GsVec lightPos = GsVec(0,-500,0);
 
+//Default scale of the objs
+float scale = 40.0;
 
 //These variables keep track of where the joints are
-
 float pi = 3.14f;
 float af = pi / 100;
 
@@ -63,10 +64,10 @@ void MyViewer::add_model(SnShape* s, GsVec p)
 
 
 
-	SnManipulator* shadow = new SnManipulator;
+	/*SnManipulator* shadow = new SnManipulator;
 	GsMat shad = computeShadow();
 	shad.rcombtrans(p);
-	shadow->initial_mat(shad);
+	shadow->initial_mat(shad);*/
 
 
 	SnGroup* g = new SnGroup;
@@ -75,11 +76,11 @@ void MyViewer::add_model(SnShape* s, GsVec p)
 	g->add(s);
 	g->add(l);
 	manip->child(g);
-	shadow->child(g); //child for shadow
-	shadow->visible(false); //No mouse interaction for shadow
-	manip->visible(false); // call this to turn off mouse interaction
+	//shadow->child(g); //child for shadow
+	//shadow->visible(false); //No mouse interaction for shadow
+	manip->visible(true); // call this to turn off mouse interaction
 	rootg()->add(manip);
-	rootg()->add(shadow); //adding shadow to the root
+	//rootg()->add(shadow); //adding shadow to the root
 	
 
 }
@@ -108,7 +109,7 @@ void MyViewer::build_scene()
 {
 	rootg()->remove_all();
 
-	
+	// This is not relevant
 		////Floor
 		//SnPrimitive* p;
 		//p = new SnPrimitive(GsPrimitive::Box, 45, 0.5, 45);
@@ -214,14 +215,63 @@ void MyViewer::build_scene()
 		//be->scale(15);
 		//add_model(bean, GsVec(x, y, z));	
 
-	// This is not relevant
+	//New Code
 
 	SnModel* playerFish = new SnModel;
-	playerFish->model()->load_obj("../reefObjs/PlayerFish/12990_Black_Moor_Goldfish_v1_l2.obj");
+	playerFish->model()->load_obj("../reefObjs/PlayerFish/blackMoorFish.obj");
 	GsModel* pf = playerFish->model();
+	pf->scale(scale);
+	add_model(playerFish, GsVec(x, y, z));
 
-	pf->scale(100);
-	add_model(playerFish, GsVec( x - 100, y - 100, z));
+	//Angel Fish
+	SnModel* aF = new SnModel;
+	aF->model()->load_obj("../reefObjs/angelFish/angelFish.obj");
+	GsModel* gsaF = aF->model();
+	gsaF->translate(GsVec(0, 5, -5));
+	gsaF->scale(scale);
+	add_model(aF, GsVec(x, y, z));
+
+	//Corals and such
+	// TableCoral/ Tree Corals = tc
+	SnModel* tc1 = new SnModel;
+	tc1->model()->load_obj("../reefObjs/TableCoral1/tableCoral1.obj");
+	GsModel* gstc1 = tc1->model();
+	gstc1->translate(GsVec(-10, -10, 0));
+	gstc1->scale(scale);
+	add_model(tc1, GsVec(x, y, z));
+
+	// TreeCoral
+	SnModel* tc2 = new SnModel;
+	tc2->model()->load_obj("../reefObjs/TreeCoral1/treeCoral1.obj");
+	GsModel* gstc2 = tc2->model();
+	gstc2->translate(GsVec(-10, -10, 0));
+	gstc2->scale(scale);
+	add_model(tc2, GsVec(x, y, z));
+
+	// Spiral Wire Coral
+	SnModel* swc = new SnModel;
+	swc->model()->load_obj("../reefObjs/spiralWireCoral/spiralWireCoral.obj");
+	GsModel* gsswc = swc->model();
+	gsswc->translate(GsVec(-10, -10, 0));
+	gsswc->scale(scale);
+	add_model(swc, GsVec(x, y, z));
+
+	//Soft Coral
+	SnModel* sc = new SnModel;
+	sc->model()->load_obj("../reefObjs/softCoral/softCoral.obj");
+	GsModel* gssc = sc->model();
+	gssc->translate(GsVec(-10, -10, 0));
+	gssc->scale(scale);
+	add_model(sc, GsVec(x, y, z));
+
+	// PillarCoral
+	SnModel* pc = new SnModel;
+	pc->model()->load_obj("../reefObjs/pillarCoral/pillarCoral.obj");
+	GsModel* gspc = pc->model();
+	gspc->translate(GsVec(-10, -10, 0));
+	gspc->scale(scale);
+	add_model(pc, GsVec(x, y, z));
+
 }
 
 
