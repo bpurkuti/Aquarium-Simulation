@@ -17,7 +17,7 @@ GsVec lightPos = GsVec(0,-500,0);
 
 //These variables keep track of where the joints are
 float leftarmcntr = 0;
-float rightarmcntr = 0;
+float rightarmcntr = 0; // Freancesoc ws here
 float leftlegcntr = 0;
 float rightlegcntr = 0;
 float headcntr = 0;
