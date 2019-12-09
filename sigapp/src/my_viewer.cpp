@@ -8,9 +8,15 @@
 
 # include <sigogl/ws_run.h>
 
+
 double x = 0.0;
 double y = 0.0;
 double z = 0.0;
+double xp = 0.0;
+double yp = 0.0;
+double zp = 0.0;
+//double fx0, fy0, fz0;
+//double fx1, fy1, fz1;
 float degrees = (float)GS_PI / 180;
 GsVec lightPos = GsVec(0,-500,0);
 
@@ -205,14 +211,20 @@ void MyViewer::build_scene()
 	playerFish->model()->load_obj("../reefObjs/PlayerFish/12990_Black_Moor_Goldfish_v1_l2.obj");
 	GsModel* pf = playerFish->model();
 	pf->scale(100);
-	add_model(playerFish, GsVec( x - 100, y - 100, z));
+	add_model(playerFish, GsVec(xp, yp, zp));
 
 	// NPC fishes
 	SnModel* fish0 = new SnModel;
-	fish0->model()->load_obj("../reefPbjs/Fish2/RB_TROUT.OBJ");
+	fish0->model()->load_obj("../reefObjs/PlayerFish/12990_Black_Moor_Goldfish_v1_l2.obj");
 	GsModel* f0 = fish0->model();
 	f0->scale(100);
-	add_model(fish0, GsVec(x + 100, y - 100, z + 100));
+	add_model(fish0, GsVec(x+250, y+250, z+250));
+
+	SnModel* fish1 = new SnModel;
+	fish1->model()->load_obj("../reefObjs/PlayerFish/12990_Black_Moor_Goldfish_v1_l2.obj");
+	GsModel* f1 = fish1->model();
+	f1->scale(100);
+	add_model(fish1, GsVec(x-250, y-250, z-250));
 }
 
 
@@ -343,6 +355,7 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 	}
 	case 'a':
 	{
+		zp -= 0.1;
 		if (rightarmcntr <= 0.049063f)
 			moverightarm(af);
 		return 1;
@@ -351,6 +364,7 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 
 	case 'w':
 	{
+		xp += 0.1;
 		if (leftarmcntr >= -0.098125f)
 			moveleftarm(-af);
 		return 1;
@@ -358,6 +372,7 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 
 	case 's':
 	{
+		xp -= 0.1;
 		if (leftarmcntr <= 0.049063f)
 			moveleftarm(af);
 		message().setf("leftaramcntr=%f", leftarmcntr);
@@ -372,6 +387,7 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 	}
 	case 'd':
 	{
+		zp += 0.1;
 		if (rightlegcntr <= 0.12)
 			moverightleg(af);
 		return 1;
@@ -427,22 +443,23 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 
 	case GsEvent::KeySpace:
 	{
-		double lt, t0 = gs_time();
-		do
-		{
-			lt = gs_time() - t0;
+		yp -= 0.1;
+		//double lt, t0 = gs_time();
+		//do
+		//{
+		//	lt = gs_time() - t0;
 
-			//camera().eye.x += 1.0f;
-			camera().eye.y += 2.5f;
-			camera().eye.z -= 3.0f;
-			//camera().center.y += 1.0f;
-			//camera().center.x += 1.0f;
+		//	//camera().eye.x += 1.0f;
+		//	camera().eye.y += 2.5f;
+		//	camera().eye.z -= 3.0f;
+		//	//camera().center.y += 1.0f;
+		//	//camera().center.x += 1.0f;
 
-			camera().up.z += 0.001f;
-			render();
-			ws_check();
-			message().setf("local time=%f", lt);
-		} while (lt < 1.5f);
+		//	camera().up.z += 0.001f;
+		//	render();
+		//	ws_check();
+		//	message().setf("local time=%f", lt);
+		//} while (lt < 1.5f);
 	}
 	}
 
