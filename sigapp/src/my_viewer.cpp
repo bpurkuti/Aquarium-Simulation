@@ -200,14 +200,14 @@ void MyViewer::build_scene()
 	}// This is not relevant
 
 	SnModel* shell = new SnModel;
-	shell->model()->load_obj("../reefObjs/seashell_obj.obj");
+	shell->model()->load_obj("../reefObjs/seashell1/seashell_obj.obj");
 	GsModel* sh = shell->model();
 
 	sh->scale(10);
 	add_model(shell, GsVec(x, y, z));
 
 	SnModel* shell2 = new SnModel;
-	shell2->model()->load_obj("../reefObjs/seashell_obj.obj");
+	shell2->model()->load_obj("../reefObjs/seashell1/seashell_obj.obj");
 	GsModel* sh2 = shell2->model();
 
 	sh2->scale(10);
