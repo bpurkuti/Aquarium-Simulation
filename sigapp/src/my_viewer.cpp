@@ -199,19 +199,12 @@ void MyViewer::build_scene()
 
 	}// This is not relevant
 
-	SnModel* shell = new SnModel;
-	shell->model()->load_obj("../reefObjs/seashell1/seashell_obj.obj");
-	GsModel* sh = shell->model();
+	SnModel* playerFish = new SnModel;
+	playerFish->model()->load_obj("../reefObjs/PlayerFish/12990_Black_Moor_Goldfish_v1_l2.obj");
+	GsModel* pf = playerFish->model();
 
-	sh->scale(10);
-	add_model(shell, GsVec(x, y, z));
-
-	SnModel* shell2 = new SnModel;
-	shell2->model()->load_obj("../reefObjs/seashell1/seashell_obj.obj");
-	GsModel* sh2 = shell2->model();
-
-	sh2->scale(10);
-	add_model(shell2, GsVec(x+10, y, z));
+	pf->scale(100);
+	add_model(playerFish, GsVec( x - 100, y - 100, z));
 }
 
 
