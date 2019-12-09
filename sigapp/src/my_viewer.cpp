@@ -196,6 +196,13 @@ void MyViewer::build_scene()
 	be->translate(GsVec(60, -45, -40));
 	be->scale(15);
 	add_model(bean, GsVec(x, y, z));	
+
+	SnModel* shell = new SnModel;
+	shell->model()->load_obj("../reefObjs/seashell_obj.obj");
+	GsModel* sh = shell->model();
+
+	sh->scale(100);
+	add_model(shell, GsVec(x, y, z));
 }
 
 
