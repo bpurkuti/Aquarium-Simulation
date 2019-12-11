@@ -14,7 +14,6 @@ double pz = 0.0;
 double x, y, z = 0.0;
 double npcC[3][10]; // coordinates, X,Y,Z, i=0->9
 float degrees = (float)GS_PI / 180;
-GsVec lightPos = GsVec(0,-500,0);
 
 //Default scale of the objs
 float scale = 40.0;
@@ -224,6 +223,7 @@ void MyViewer::build_scene()
 	SnModel* playerFish = new SnModel;
 	playerFish->model()->load_obj("../reefObjs/PlayerFish/blackMoorFish.obj");
 	GsModel* pf = playerFish->model();
+	pf->translate(GsVec(5,5,5));
 	pf->scale(scale);
 	add_model(playerFish, GsVec(px, py, pz));
 
@@ -235,9 +235,10 @@ void MyViewer::build_scene()
 		}
 	}
 	// makes the fishes
-	SnModel* af[10]; // the NPC fishes
-	GsModel* gsaf[10]; // NPC Fishes
-	for (int i = 0; i < 10; i++) {
+	const int npcNum = 5;
+	SnModel* af[npcNum]; // the NPC fishes
+	GsModel* gsaf[npcNum]; // NPC Fishes
+	for (int i = 0; i < npcNum; i++) {
 		af[i] = new SnModel;
 		af[i]->model()->load_obj("../reefObjs/angelFish/angelFish.obj");
 		gsaf[i] = af[i]->model();
@@ -246,19 +247,28 @@ void MyViewer::build_scene()
 	}
 
 	//Corals and such
+
 	// TableCoral/ Tree Corals = tc
 	SnModel* tc1 = new SnModel;
 	tc1->model()->load_obj("../reefObjs/TableCoral1/tableCoral1.obj");
 	GsModel* gstc1 = tc1->model();
-	gstc1->translate(GsVec(-10, -10, 0));
+	gstc1->translate(GsVec(-5, -10, 0));
 	gstc1->scale(scale);
 	add_model(tc1, GsVec(x, y, z));
+
+	//Soft Coral
+	SnModel* sc = new SnModel;
+	sc->model()->load_obj("../reefObjs/softCoral/softCoral.obj");
+	GsModel* gssc = sc->model();
+	gssc->translate(GsVec(-10, -10, -10));
+	gssc->scale(scale);
+	add_model(sc, GsVec(x, y, z));
 
 	// TreeCoral
 	SnModel* tc2 = new SnModel;
 	tc2->model()->load_obj("../reefObjs/TreeCoral1/treeCoral1.obj");
 	GsModel* gstc2 = tc2->model();
-	gstc2->translate(GsVec(-10, -10, 0));
+	gstc2->translate(GsVec(-15, -10, 0));
 	gstc2->scale(scale);
 	add_model(tc2, GsVec(x, y, z));
 
@@ -266,23 +276,15 @@ void MyViewer::build_scene()
 	SnModel* swc = new SnModel;
 	swc->model()->load_obj("../reefObjs/spiralWireCoral/spiralWireCoral.obj");
 	GsModel* gsswc = swc->model();
-	gsswc->translate(GsVec(-10, -10, 0));
+	gsswc->translate(GsVec(13, -10, -2));
 	gsswc->scale(scale);
 	add_model(swc, GsVec(x, y, z));
-
-	//Soft Coral
-	SnModel* sc = new SnModel;
-	sc->model()->load_obj("../reefObjs/softCoral/softCoral.obj");
-	GsModel* gssc = sc->model();
-	gssc->translate(GsVec(-10, -10, 0));
-	gssc->scale(scale);
-	add_model(sc, GsVec(x, y, z));
 
 	// PillarCoral
 	SnModel* pc = new SnModel;
 	pc->model()->load_obj("../reefObjs/pillarCoral/pillarCoral.obj");
 	GsModel* gspc = pc->model();
-	gspc->translate(GsVec(-10, -10, 0));
+	gspc->translate(GsVec(15, -10, 5));
 	gspc->scale(scale);
 	add_model(pc, GsVec(x, y, z));
 
@@ -430,8 +432,21 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 		case GsEvent::KeyDown:{
 			return 1;
 		}
-		case GsEvent::KeySpace:{
-			return 1;
+		case GsEvent::KeySpace:
+		{
+			//Moving camera up, could be improved to rotate around
+			double lt, t0 = gs_time();
+			do
+			{
+				lt = gs_time() - t0;
+
+				camera().eye.y += 2.5f;
+				camera().eye.z -= 3.0f;
+				camera().up.z += 0.001f;
+				render();
+				ws_check();
+				message().setf("local time=%f", lt);
+			} while (lt < 1.5f);
 		}
 	}
 	return 0;
