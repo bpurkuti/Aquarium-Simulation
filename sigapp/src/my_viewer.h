@@ -23,14 +23,10 @@ class MyViewer : public WsViewer
 	virtual int uievent ( int e ) override;
 
 
-	void moveleftarm(float xx);
-	void moverightarm(float xx);
-	void moveleftleg(float xx);
-	void moverightleg(float xx);
-	void movehead(float xx);
+	void moveChar( float a, float b, float c);
 	GsMat computeShadow();
 
-	void moveall(float a, float b, float c);
+	
 
 };
 

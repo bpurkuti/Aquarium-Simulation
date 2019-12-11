@@ -290,6 +290,20 @@ void MyViewer::build_scene()
 
 }
 
+void MyViewer::moveChar( float a, float b, float c)
+{
+	x += a;
+	y += b;
+	z += c;
+	float d = 0;
+	SnManipulator* player = rootg()->get<SnManipulator>(0);
+	GsMat pMat = player->mat();
+	pMat.translation(GsVec(x,y,z));
+	player->initial_mat(pMat);
+	//player->translation(GsVec(a,b,c));
+	render();
+	ws_check();
+}
 
 //void MyViewer::moveleftarm(float xx)
 //{
@@ -421,12 +435,14 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 			return 1;
 		}
 		case GsEvent::KeyLeft:{
+			moveChar(-1,0,0);
 			return 1;
 		}
 		case GsEvent::KeyUp:{
 			return 1;
 		}
 		case GsEvent::KeyRight:{
+			moveChar(1, 0, 0);
 			return 1;
 		}
 		case GsEvent::KeyDown:{
