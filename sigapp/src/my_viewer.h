@@ -22,7 +22,7 @@ class MyViewer : public WsViewer
 	virtual int handle_keyboard ( const GsEvent &e ) override;
 	virtual int uievent ( int e ) override;
 
-	//void move(SnModel* mod, float a, float b, float c);
+	void moveNPC(float a, float b, float c);
 	void moveChar( float a, float b, float c);
 	GsMat computeShadow();
 

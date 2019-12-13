@@ -106,8 +106,35 @@ GsMat MyViewer::computeShadow()
 	return d;
 }
 
-void move(SnModel* mod, int xdir, int ydir, int zdir) {
+void MyViewer::moveNPC (float a, float b, float c) {
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 10; j++){
+				if (i == 0){ 
+					npcC[i][j] += a;
+				}
+				if (i == 1) {
+					npcC[i][j] += b;
+				}
+				if (i == 2) {
+					npcC[i][j] += c;
+				}
+		}
+	}
 
+	const int npcNum = 4;
+	SnManipulator* npF[npcNum];
+	GsMat npFmat[npcNum];
+	// MOVES TOP ONE 10 TIMES
+	for (int i = 0; i < npcNum; i++) {
+		npF[i] = rootg()->get<SnManipulator>(i+1);
+		npFmat[i] = npF[i]->mat();
+		npFmat[i].translation(GsVec(npcC[0][i], npcC[1][i], npcC[2][i]));
+		npF[i]->initial_mat(npFmat[i]);
+		npF[i]->translation(GsVec(a, b, c));
+		render();
+		ws_check();
+
+	}
 }
 
 void MyViewer::build_scene()
@@ -130,7 +157,7 @@ void MyViewer::build_scene()
 		}
 	}
 	// makes the fishes
-	const int npcNum = 5;
+	const int npcNum = 4;
 	SnModel* af[npcNum]; // the NPC fishes
 	GsModel* gsaf[npcNum]; // NPC Fishes
 	for (int i = 0; i < npcNum; i++) {
@@ -195,7 +222,7 @@ void MyViewer::moveChar( float a, float b, float c)
 	GsMat pMat = player->mat();
 	pMat.translation(GsVec(px,py,pz));
 	player->initial_mat(pMat);
-	player->translation(GsVec(a,b,c));
+	//player->translation(GsVec(a,b,c));
 	render();
 	ws_check();
 }
@@ -288,27 +315,43 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 		
 		// the commented thing are what cause the code to crash
 		case 'q':{ // +X
-			moveChar(-1, 0, 0);
+			if (px < 1000) {
+				moveChar(5, 0, 0);
+			}
 			return 1;
 		}
 		case 'a':{ // -X
-			moveChar(1, 0, 0); 
+			if (px > -1000) {
+				moveChar(-5, 0, 0);
+			}
 			return 1;
 		}
-		case 'w':{ // +Y
-			moveChar(0, 1, 0);
+		case 'w': { // +Y
+			if (py < 1000) {
+				moveChar(0, 5, 0);
+			}
 			return 1;
 		}
 		case 's':{ // -Y
-			moveChar(0, -1, 0);
+			if (py > -1000) {
+				moveChar(0, -5, 0);
+			}
 			return 1;
 		}
 		case 'e':{ // +Z
-			moveChar(0, 0, 1);
+			if (pz < 1000) {
+				moveChar(0, 0, 5);
+			}
 			return 1;
 		}
 		case 'd': { // -Z
-			moveChar(0, 0, -1);
+			if (pz > -1000) {
+				moveChar(0, 0, -5);
+			}
+			return 1;
+		}
+		case 'r': { // MOVE NPCs
+			moveNPC(1, 1, 1);
 			return 1;
 		}
 		case GsEvent::KeyLeft:{
