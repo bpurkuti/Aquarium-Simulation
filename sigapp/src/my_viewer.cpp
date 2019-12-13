@@ -63,14 +63,6 @@ void MyViewer::add_model(SnShape* s, GsVec p)
 	//2 instead of 1 because, rootg object at 1 is the shadow of the first object
 	//and rootg at 3 contains shadow of the second object.. and so on....
 
-
-
-	/*SnManipulator* shadow = new SnManipulator;
-	GsMat shad = computeShadow();
-	shad.rcombtrans(p);
-	shadow->initial_mat(shad);*/
-
-
 	SnGroup* g = new SnGroup;
 	SnLines* l = new SnLines;
 	l->color(GsColor::orange);
@@ -82,16 +74,10 @@ void MyViewer::add_model(SnShape* s, GsVec p)
 	manip->visible(true); // call this to turn off mouse interaction
 	rootg()->add(manip);
 	//rootg()->add(shadow); //adding shadow to the root
-	
-
 }
 
 GsMat MyViewer::computeShadow()
 {
-	GsLight l;
-	//float lx = l.position.x;
-	//float ly = l.position.y;
-	//float lz = l.position.z;
 	float lx = 5.0f;
 	float ly = 10.0f;
 	float lz = 15.0f;
@@ -133,7 +119,6 @@ void MyViewer::moveNPC (float a, float b, float c) {
 		npF[i]->translation(GsVec(a, b, c));
 		render();
 		ws_check();
-
 	}
 }
 
@@ -226,82 +211,6 @@ void MyViewer::moveChar( float a, float b, float c)
 	render();
 	ws_check();
 }
-
-//void MyViewer::moveleftarm(float xx)
-//{
-//	SnManipulator* larm = rootg()->get<SnManipulator>(11);
-//	GsMat armMat = larm->mat();
-//	GsMat tr;
-//	leftarmcntr += xx;
-//
-//	tr.translation(GsVec(x, y, z));
-//	armMat.rotz(leftarmcntr);
-//	armMat.mult(tr, armMat);
-//	larm->initial_mat(armMat);
-//	render();
-//	ws_check();
-//}
-
-//void MyViewer::movehead(float xx)
-//{
-//	SnManipulator* larm = rootg()->get<SnManipulator>(7);
-//	GsMat armMat = larm->mat();
-//	GsMat tr;
-//	GsMat rot;
-//	headcntr += xx;
-//	rot.rotz(headcntr);
-//	tr.translation(GsVec(0, 0, 0));
-//
-//	armMat.rotx(headcntr);
-//	armMat.mult(tr, armMat);
-//	larm->initial_mat(armMat);
-//	render();
-//	ws_check();
-//}
-
-//void MyViewer::moveall(float a, float b, float c)
-//{
-//	x += a;
-//	y += b;
-//	z += c;
-//	  
-//	SnManipulator* rleg = rootg()->get<SnManipulator>(1);
-//	GsMat rlMat = rleg->mat();
-//
-//	SnManipulator* lleg= rootg()->get<SnManipulator>(3);
-//	GsMat llMat = lleg->mat();
-//
-//	SnManipulator* torso = rootg()->get<SnManipulator>(5);
-//	GsMat tMat = torso->mat();
-//
-//	SnManipulator* head = rootg()->get<SnManipulator>(7);
-//	GsMat hMat = head->mat();
-//
-//	SnManipulator* rarm = rootg()->get<SnManipulator>(9);
-//	GsMat raMat = rarm->mat();
-//
-//	SnManipulator* larm = rootg()->get<SnManipulator>(11);
-//	GsMat laMat =larm->mat();
-//
-//
-//	rlMat.translation(GsVec(x, y, z));
-//	llMat.translation(GsVec(x, y, z));
-//	tMat.translation(GsVec(x, y, z));
-//	hMat.translation(GsVec(x, y, z));
-//	raMat.translation(GsVec(x, y, z));
-//	laMat.translation(GsVec(x, y, z));
-//
-//	rleg->initial_mat(rlMat);
-//	lleg->initial_mat(llMat);
-//	torso->initial_mat(tMat);
-//	head->initial_mat(hMat);
-//	rarm->initial_mat(raMat);
-//	larm->initial_mat(laMat);
-//
-//	render();
-//	ws_check();
-//}
-
 
 int MyViewer::handle_keyboard(const GsEvent& e)
 {
