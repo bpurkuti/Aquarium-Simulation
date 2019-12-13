@@ -153,7 +153,7 @@ void MyViewer::build_scene()
 	// sets variables quickly because it needs to be done
 	for (int q = 0; q < 3; q++) {
 		for (int i = 0; i < 10; i ++){
-			npcC[q][i] = (q * i * 100);
+			npcC[q][i] = (q * i * 150 * 1^i);
 		}
 	}
 	// makes the fishes
