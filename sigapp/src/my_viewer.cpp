@@ -106,6 +106,10 @@ GsMat MyViewer::computeShadow()
 	return d;
 }
 
+void move(SnModel* mod, int xdir, int ydir, int zdir) {
+
+}
+
 void MyViewer::build_scene()
 {
 	rootg()->remove_all();
@@ -183,15 +187,15 @@ void MyViewer::build_scene()
 
 void MyViewer::moveChar( float a, float b, float c)
 {
-	x += a;
-	y += b;
-	z += c;
+	px += a;
+	py += b;
+	pz += c;
 	float d = 0;
 	SnManipulator* player = rootg()->get<SnManipulator>(0);
 	GsMat pMat = player->mat();
-	pMat.translation(GsVec(x,y,z));
+	pMat.translation(GsVec(px,py,pz));
 	player->initial_mat(pMat);
-	//player->translation(GsVec(a,b,c));
+	player->translation(GsVec(a,b,c));
 	render();
 	ws_check();
 }
@@ -283,57 +287,37 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 		default: gsout << "Key pressed: " << e.key << gsnl;
 		
 		// the commented thing are what cause the code to crash
-		case 'w':{ // +X
-			px += 0.1;
-			/*rootg()->remove_all();
-			build_scene();
-			render();*/
+		case 'q':{ // +X
+			moveChar(-1, 0, 0);
 			return 1;
 		}
 		case 'a':{ // -X
-			px -= 0.1;
-			/*rootg()->remove_all();
-			build_scene();
-			render();*/
+			moveChar(1, 0, 0); 
 			return 1;
 		}
-		case 's':{ // +Y
-			py += 0.1;
-			/*rootg()->remove_all();
-			build_scene();
-			render();*/
+		case 'w':{ // +Y
+			moveChar(0, 1, 0);
 			return 1;
 		}
-		case 'd':{ // -Y
-			py -= 0.1;
-			/*rootg()->remove_all();
-			build_scene();
-			render();*/
+		case 's':{ // -Y
+			moveChar(0, -1, 0);
 			return 1;
 		}
-		case 'q':{ // +Z
-			pz += 0.1;
-			/*rootg()->remove_all();
-			build_scene();
-			render();*/
+		case 'e':{ // +Z
+			moveChar(0, 0, 1);
 			return 1;
 		}
-		case 'e': { // -Z
-			pz -= 0.1;
-			/*rootg()->remove_all();
-			build_scene();
-			render();*/
+		case 'd': { // -Z
+			moveChar(0, 0, -1);
 			return 1;
 		}
 		case GsEvent::KeyLeft:{
-			moveChar(-1,0,0);
 			return 1;
 		}
 		case GsEvent::KeyUp:{
 			return 1;
 		}
 		case GsEvent::KeyRight:{
-			moveChar(1, 0, 0);
 			return 1;
 		}
 		case GsEvent::KeyDown:{
@@ -342,7 +326,7 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 		case GsEvent::KeySpace:
 		{
 			//Moving camera up, could be improved to rotate around
-			double lt, t0 = gs_time();
+			/*double lt, t0 = gs_time();
 			do
 			{
 				lt = gs_time() - t0;
@@ -353,7 +337,7 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 				render();
 				ws_check();
 				message().setf("local time=%f", lt);
-			} while (lt < 1.5f);
+			} while (lt < 1.5f);*/
 		}
 	}
 	return 0;
