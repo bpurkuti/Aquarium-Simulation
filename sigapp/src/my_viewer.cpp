@@ -8,11 +8,22 @@
 
 # include <sigogl/ws_run.h>
 
+//TO DO LIST
+/*
+1. Animation on Reef Ojbects
+2. NPC Fish follow curves
+3. NON trivial Animation on ALL fishes
+4. Automated Movements for NPC Fishes
+5. Collision Detection
+6. Add Aquarium Object (Hollow, but exists for boundaries)
+*/
+
+
 double px = 0.0;
 double py = 0.0;
 double pz = 0.0;
 double x, y, z = 0.0;
-double npcC[3][10]; // coordinates, X,Y,Z, i=0->9
+double npcC[3][4]; // coordinates, X,Y,Z, i=0->3 First is Coord (x,y,z), Second is the Fish
 float degrees = (float)GS_PI / 180;
 
 //Default scale of the objs
@@ -136,11 +147,23 @@ void MyViewer::build_scene()
 
 	//Angel Fishes
 	// sets variables quickly because it needs to be done
-	for (int q = 0; q < 3; q++) {
-		for (int i = 0; i < 10; i ++){
-			npcC[q][i] = (q * i * 150 * 1^i);
-		}
-	}
+	//Fish 0
+	npcC[0][0] = 250;
+	npcC[1][0] = 250;
+	npcC[2][0] = 250;
+	//Fish 1
+	npcC[0][1] = -250;
+	npcC[1][1] = -250;
+	npcC[2][1] = 250;
+	//Fish 2
+	npcC[0][2] = 250;
+	npcC[1][2] = 250;
+	npcC[2][2] = -250;
+	//Fish 3
+	npcC[0][3] = -250;
+	npcC[1][3] = -250;
+	npcC[2][3] = -250;
+
 	// makes the fishes
 	const int npcNum = 4;
 	SnModel* af[npcNum]; // the NPC fishes
@@ -261,6 +284,10 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 		}
 		case 'r': { // MOVE NPCs
 			moveNPC(1, 1, 1);
+			return 1;
+		}
+		case 'f': { // MOVE NPCs
+			moveNPC(-1, -1, -1);
 			return 1;
 		}
 		case GsEvent::KeyLeft:{
