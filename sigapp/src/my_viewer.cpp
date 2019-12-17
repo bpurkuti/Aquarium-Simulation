@@ -15,6 +15,7 @@ double x, y, z = 0.0;
 double npcC[3][10]; // coordinates, X,Y,Z, i=0->9
 float degrees = (float)GS_PI / 180;
 
+float dir = 0;
 //Default scale of the objs
 float scale = 40.0;
 
@@ -65,10 +66,10 @@ void MyViewer::add_model(SnShape* s, GsVec p)
 
 
 
-	/*SnManipulator* shadow = new SnManipulator;
+	SnManipulator* shadow = new SnManipulator;
 	GsMat shad = computeShadow();
 	shad.rcombtrans(p);
-	shadow->initial_mat(shad);*/
+	shadow->initial_mat(shad);
 
 
 	SnGroup* g = new SnGroup;
@@ -77,18 +78,18 @@ void MyViewer::add_model(SnShape* s, GsVec p)
 	g->add(s);
 	g->add(l);
 	manip->child(g);
-	//shadow->child(g); //child for shadow
-	//shadow->visible(false); //No mouse interaction for shadow
+	shadow->child(g); //child for shadow
+	shadow->visible(false); //No mouse interaction for shadow
 	manip->visible(true); // call this to turn off mouse interaction
 	rootg()->add(manip);
-	//rootg()->add(shadow); //adding shadow to the root
+	rootg()->add(shadow); //adding shadow to the root
 	
 
 }
 
 GsMat MyViewer::computeShadow()
 {
-	GsLight l;
+	//GsLight l;
 	//float lx = l.position.x;
 	//float ly = l.position.y;
 	//float lz = l.position.z;
@@ -298,9 +299,32 @@ void MyViewer::moveChar( float a, float b, float c)
 	float d = 0;
 	SnManipulator* player = rootg()->get<SnManipulator>(0);
 	GsMat pMat = player->mat();
+	GsMat mMat;
+	if (dir == 1) {
+		mMat.roty(180 * degrees);
+	}
+	
 	pMat.translation(GsVec(x,y,z));
+	pMat *= mMat;
 	player->initial_mat(pMat);
+
+	//SnManipulator* shadow = rootg()->get<SnManipulator>(1);
+	//GsMat sMat = player->mat();
+	////sMat.translation();
+	//sMat.rcombtrans(GsVec(x, y, z));
+	//shadow->initial_mat(sMat);
 	//player->translation(GsVec(a,b,c));
+	render();
+	ws_check();
+}
+
+void MyViewer::rotateFish()
+{
+	SnManipulator* player = rootg()->get<SnManipulator>(0);
+	GsMat pMat = player->mat();
+	pMat.roty(180*degrees);
+	pMat.translation(GsVec(x, y, z));
+	player->initial_mat(pMat);
 	render();
 	ws_check();
 }
@@ -436,13 +460,18 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 		}
 		case GsEvent::KeyLeft:{
 			moveChar(-1,0,0);
+			dir = 1;
+			message().setf("Dir=%f", dir);
 			return 1;
 		}
 		case GsEvent::KeyUp:{
+			rotateFish();
 			return 1;
 		}
 		case GsEvent::KeyRight:{
 			moveChar(1, 0, 0);
+			dir = 0;
+			message().setf("Dir=%f", dir);
 			return 1;
 		}
 		case GsEvent::KeyDown:{

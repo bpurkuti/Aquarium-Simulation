@@ -24,6 +24,7 @@ class MyViewer : public WsViewer
 
 
 	void moveChar( float a, float b, float c);
+	void rotateFish();
 	GsMat computeShadow();
 
 	
