@@ -8,11 +8,22 @@
 
 # include <sigogl/ws_run.h>
 
+//TO DO LIST
+/*
+1. Animation on Reef Ojbects
+2. NPC Fish follow curves
+3. NON trivial Animation on ALL fishes
+4. Automated Movements for NPC Fishes
+5. Collision Detection
+6. Add Aquarium Object (Hollow, but exists for boundaries)
+*/
+
+
 double px = 0.0;
 double py = 0.0;
 double pz = 0.0;
 double x, y, z = 0.0;
-double npcC[3][10]; // coordinates, X,Y,Z, i=0->9
+double npcC[3][4]; // coordinates, X,Y,Z, i=0->3 First is Coord (x,y,z), Second is the Fish
 float degrees = (float)GS_PI / 180;
 
 float dir = 0;
@@ -64,13 +75,10 @@ void MyViewer::add_model(SnShape* s, GsVec p)
 	//2 instead of 1 because, rootg object at 1 is the shadow of the first object
 	//and rootg at 3 contains shadow of the second object.. and so on....
 
-
-
 	SnManipulator* shadow = new SnManipulator;
 	GsMat shad = computeShadow();
 	shad.rcombtrans(p);
 	shadow->initial_mat(shad);
-
 
 	SnGroup* g = new SnGroup;
 	SnLines* l = new SnLines;
@@ -83,16 +91,13 @@ void MyViewer::add_model(SnShape* s, GsVec p)
 	manip->visible(true); // call this to turn off mouse interaction
 	rootg()->add(manip);
 	rootg()->add(shadow); //adding shadow to the root
-	
+	//rootg()->add(shadow); //adding shadow to the root
 
 }
 
 GsMat MyViewer::computeShadow()
 {
-	//GsLight l;
-	//float lx = l.position.x;
-	//float ly = l.position.y;
-	//float lz = l.position.z;
+
 	float lx = 5.0f;
 	float ly = 10.0f;
 	float lz = 15.0f;
@@ -107,118 +112,39 @@ GsMat MyViewer::computeShadow()
 	return d;
 }
 
+void MyViewer::moveNPC (float a, float b, float c) {
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 10; j++){
+				if (i == 0){ 
+					npcC[i][j] += a;
+				}
+				if (i == 1) {
+					npcC[i][j] += b;
+				}
+				if (i == 2) {
+					npcC[i][j] += c;
+				}
+		}
+	}
+
+	const int npcNum = 4;
+	SnManipulator* npF[npcNum];
+	GsMat npFmat[npcNum];
+	// MOVES TOP ONE 10 TIMES
+	for (int i = 0; i < npcNum; i++) {
+		npF[i] = rootg()->get<SnManipulator>(i+1);
+		npFmat[i] = npF[i]->mat();
+		npFmat[i].translation(GsVec(npcC[0][i], npcC[1][i], npcC[2][i]));
+		npF[i]->initial_mat(npFmat[i]);
+		npF[i]->translation(GsVec(a, b, c));
+		render();
+		ws_check();
+	}
+}
+
 void MyViewer::build_scene()
 {
 	rootg()->remove_all();
-	
-	{
-		// This is not relevant
-		////Floor
-		//SnPrimitive* p;
-		//p = new SnPrimitive(GsPrimitive::Box, 45, 0.5, 45);
-		//p->prim().material.diffuse = GsColor::yellow;
-		//GsModel* d = p->model();
-		//d->translate(GsVec(0, -700, 0));
-		//d->scale(35);
-		//rootg()->add(p);
-
-		////Right Leg
-		////load the obj to the model
-		////rotate the matrices and transform to change the alignment
-		////Translate to the proper place
-		////scale it to change the size
-		//SnModel* leg = new SnModel;
-		//leg->model()->load_obj("../objs/leg.obj");
-		//GsModel* o = leg->model();
-		//GsMat lmatz;
-		//lmatz.rotx(-100 * degrees);
-		//o->transform(lmatz, false);
-		//o->translate(GsVec(-15, -50, 0));
-		//o->scale(13);
-		//add_model(leg, GsVec(x, y, z));
-
-		////Left Leg
-		////Same step as left leg
-		////I am mirroring the obj in x axis
-		////Using Identity matrix mirr and multiplying it to input matrix lrmatz, then transforming it
-		////The model appears black because I believe its turning it inside out, do not know how to fix it yet
-		//SnModel* legr = new SnModel;
-		//legr->model()->load_obj("../objs/leg.obj");
-		//GsModel* lr = legr->model();
-		//GsMat lrmatz;
-		//GsMat mirr(-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-		//lrmatz.rotx(-100 * degrees);
-		//GsMat mirrmat = lrmatz * mirr;
-		//lr->transform(mirrmat, false);
-		//lr->translate(GsVec(13, -50, 0));
-		//lr->scale(13);
-		//add_model(legr, GsVec(x, y, z));
-
-
-		////Torso
-		//SnModel* torso = new SnModel;
-		//torso->model()->load_obj("../objs/torso.obj");
-		//GsModel* t = torso->model();
-		//GsMat tmat;
-		//tmat.rotx(-100 * degrees);
-		//t->transform(tmat, false);
-		//t->translate(GsVec(0, 50, -20));
-		//t->scale(18);
-		//add_model(torso, GsVec(x, y, z));
-
-		////Head
-		//SnModel* head = new SnModel;
-		//head->model()->load_obj("../objs/TheRock2.obj");
-		//GsModel* h = head->model();
-		//h->translate(GsVec(-15, 915, -210));
-		//h->scale(2);
-		//add_model(head, GsVec(x, y, z));
-
-		////Right Arm
-		//SnModel* rarm = new SnModel;
-		//rarm->model()->load_obj("../objs/arm.obj");
-		//GsModel* rm = rarm->model();
-		//GsMat ramat;
-		//ramat.rotx(-100 * degrees);
-		//rm->transform(ramat, false);
-		//rm->translate(GsVec(-40, 60, -20));
-		//rm->scale(15);
-		//add_model(rarm, GsVec(x, y, z));
-
-		//////Left Arm
-		//SnModel* larm = new SnModel;
-		//larm->model()->load_obj("../objs/arm.obj");
-		//GsModel* lm = larm->model();
-		//GsMat lamat;
-		////I am going to use the same GsMat mirr
-		//lamat.rotx(-100 * degrees);
-		//GsMat mirr2mat = lamat * mirr;
-		//lm->transform(mirr2mat, false);
-		//lm->translate(GsVec(35, 60, -20));
-		//lm->scale(15);
-		//add_model(larm, GsVec(x, y, z));
-
-		////objs
-		//////heli
-		////SnModel* heli = new SnModel;
-		////heli->model()->load_obj("../objs/Heli_bell.obj");
-		////GsModel* he = heli->model();
-		////he->translate(GsVec(-20,-20,25));
-		////he->scale(35);
-		////add_model(heli, GsVec(x, y, z));
-
-		////beanbag
-		//SnModel* bean = new SnModel;
-		//bean->model()->load_obj("../objs/beanbag.obj");
-		//GsModel* be = bean->model();
-		//GsMat bb;
-		//bb.rotx(-100 * degrees);
-		//be->transform(bb, false);
-		//be->translate(GsVec(60, -45, -40));
-		//be->scale(15);
-		//add_model(bean, GsVec(x, y, z));	
-	}
-	//New Code
 
 	// the fish that is controled by player
 	SnModel* playerFish = new SnModel;
@@ -230,13 +156,25 @@ void MyViewer::build_scene()
 
 	//Angel Fishes
 	// sets variables quickly because it needs to be done
-	for (int q = 0; q < 3; q++) {
-		for (int i = 0; i < 10; i ++){
-			npcC[q][i] = (q * i * 100);
-		}
-	}
+	//Fish 0
+	npcC[0][0] = 250;
+	npcC[1][0] = 250;
+	npcC[2][0] = 250;
+	//Fish 1
+	npcC[0][1] = -250;
+	npcC[1][1] = -250;
+	npcC[2][1] = 250;
+	//Fish 2
+	npcC[0][2] = 250;
+	npcC[1][2] = 250;
+	npcC[2][2] = -250;
+	//Fish 3
+	npcC[0][3] = -250;
+	npcC[1][3] = -250;
+	npcC[2][3] = -250;
+
 	// makes the fishes
-	const int npcNum = 5;
+	const int npcNum = 4;
 	SnModel* af[npcNum]; // the NPC fishes
 	GsModel* gsaf[npcNum]; // NPC Fishes
 	for (int i = 0; i < npcNum; i++) {
@@ -293,19 +231,12 @@ void MyViewer::build_scene()
 
 void MyViewer::moveChar( float a, float b, float c)
 {
-	x += a;
-	y += b;
-	z += c;
+	px += a;
+	py += b;
+	pz += c;
 	float d = 0;
 	SnManipulator* player = rootg()->get<SnManipulator>(0);
 	GsMat pMat = player->mat();
-	GsMat mMat;
-	if (dir == 1) {
-		mMat.roty(180 * degrees);
-	}
-	
-	pMat.translation(GsVec(x,y,z));
-	pMat *= mMat;
 	player->initial_mat(pMat);
 
 	//SnManipulator* shadow = rootg()->get<SnManipulator>(1);
@@ -317,92 +248,6 @@ void MyViewer::moveChar( float a, float b, float c)
 	render();
 	ws_check();
 }
-
-void MyViewer::rotateFish()
-{
-	SnManipulator* player = rootg()->get<SnManipulator>(0);
-	GsMat pMat = player->mat();
-	pMat.roty(180*degrees);
-	pMat.translation(GsVec(x, y, z));
-	player->initial_mat(pMat);
-	render();
-	ws_check();
-}
-
-//void MyViewer::moveleftarm(float xx)
-//{
-//	SnManipulator* larm = rootg()->get<SnManipulator>(11);
-//	GsMat armMat = larm->mat();
-//	GsMat tr;
-//	leftarmcntr += xx;
-//
-//	tr.translation(GsVec(x, y, z));
-//	armMat.rotz(leftarmcntr);
-//	armMat.mult(tr, armMat);
-//	larm->initial_mat(armMat);
-//	render();
-//	ws_check();
-//}
-
-//void MyViewer::movehead(float xx)
-//{
-//	SnManipulator* larm = rootg()->get<SnManipulator>(7);
-//	GsMat armMat = larm->mat();
-//	GsMat tr;
-//	GsMat rot;
-//	headcntr += xx;
-//	rot.rotz(headcntr);
-//	tr.translation(GsVec(0, 0, 0));
-//
-//	armMat.rotx(headcntr);
-//	armMat.mult(tr, armMat);
-//	larm->initial_mat(armMat);
-//	render();
-//	ws_check();
-//}
-
-//void MyViewer::moveall(float a, float b, float c)
-//{
-//	x += a;
-//	y += b;
-//	z += c;
-//	  
-//	SnManipulator* rleg = rootg()->get<SnManipulator>(1);
-//	GsMat rlMat = rleg->mat();
-//
-//	SnManipulator* lleg= rootg()->get<SnManipulator>(3);
-//	GsMat llMat = lleg->mat();
-//
-//	SnManipulator* torso = rootg()->get<SnManipulator>(5);
-//	GsMat tMat = torso->mat();
-//
-//	SnManipulator* head = rootg()->get<SnManipulator>(7);
-//	GsMat hMat = head->mat();
-//
-//	SnManipulator* rarm = rootg()->get<SnManipulator>(9);
-//	GsMat raMat = rarm->mat();
-//
-//	SnManipulator* larm = rootg()->get<SnManipulator>(11);
-//	GsMat laMat =larm->mat();
-//
-//
-//	rlMat.translation(GsVec(x, y, z));
-//	llMat.translation(GsVec(x, y, z));
-//	tMat.translation(GsVec(x, y, z));
-//	hMat.translation(GsVec(x, y, z));
-//	raMat.translation(GsVec(x, y, z));
-//	laMat.translation(GsVec(x, y, z));
-//
-//	rleg->initial_mat(rlMat);
-//	lleg->initial_mat(llMat);
-//	torso->initial_mat(tMat);
-//	head->initial_mat(hMat);
-//	rarm->initial_mat(raMat);
-//	larm->initial_mat(laMat);
-//
-//	render();
-//	ws_check();
-//}
 
 
 int MyViewer::handle_keyboard(const GsEvent& e)
@@ -416,62 +261,52 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 		default: gsout << "Key pressed: " << e.key << gsnl;
 		
 		// the commented thing are what cause the code to crash
-		case 'w':{ // +X
-			px += 0.1;
-			/*rootg()->remove_all();
-			build_scene();
-			render();*/
+		case 'q':{ // +X
+			if (px < 1000) {
+				moveChar(5, 0, 0);
+			}
 			return 1;
 		}
 		case 'a':{ // -X
-			px -= 0.1;
-			/*rootg()->remove_all();
-			build_scene();
-			render();*/
+			if (px > -1000) {
+				moveChar(-5, 0, 0);
+			}
 			return 1;
 		}
-		case 's':{ // +Y
-			py += 0.1;
-			/*rootg()->remove_all();
-			build_scene();
-			render();*/
+		case 'w': { // +Y
+			if (py < 1000) {
+				moveChar(0, 5, 0);
+			}
 			return 1;
 		}
-		case 'd':{ // -Y
-			py -= 0.1;
-			/*rootg()->remove_all();
-			build_scene();
-			render();*/
+		case 's':{ // -Y
+			if (py > -1000) {
+				moveChar(0, -5, 0);
+			}
 			return 1;
 		}
-		case 'q':{ // +Z
-			pz += 0.1;
-			/*rootg()->remove_all();
-			build_scene();
-			render();*/
+		case 'e':{ // +Z
+			if (pz < 1000) {
+				moveChar(0, 0, 5);
+			}
 			return 1;
 		}
-		case 'e': { // -Z
-			pz -= 0.1;
-			/*rootg()->remove_all();
-			build_scene();
-			render();*/
+		case 'd': { // -Z
+			if (pz > -1000) {
+				moveChar(0, 0, -5);
+			}
+			return 1;
+		}
+		case 'r': { // MOVE NPCs
+			moveNPC(1, 1, 1);
+			return 1;
+		}
+		case 'f': { // MOVE NPCs
+			moveNPC(-1, -1, -1);
 			return 1;
 		}
 		case GsEvent::KeyLeft:{
-			moveChar(-1,0,0);
-			dir = 1;
-			message().setf("Dir=%f", dir);
-			return 1;
-		}
-		case GsEvent::KeyUp:{
-			rotateFish();
-			return 1;
-		}
-		case GsEvent::KeyRight:{
-			moveChar(1, 0, 0);
-			dir = 0;
-			message().setf("Dir=%f", dir);
+
 			return 1;
 		}
 		case GsEvent::KeyDown:{
@@ -480,7 +315,7 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 		case GsEvent::KeySpace:
 		{
 			//Moving camera up, could be improved to rotate around
-			double lt, t0 = gs_time();
+			/*double lt, t0 = gs_time();
 			do
 			{
 				lt = gs_time() - t0;
@@ -491,7 +326,7 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 				render();
 				ws_check();
 				message().setf("local time=%f", lt);
-			} while (lt < 1.5f);
+			} while (lt < 1.5f);*/
 		}
 	}
 	return 0;
