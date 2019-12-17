@@ -3,3 +3,15 @@
 *.db
 sig/
 sigapp/vs2019/.vs/sigapp/v16/Browse.VC.db
+*.ipch
+sigapp/vs2019/.vs/sigapp/v16/.suo
+*.ipch
+*.obj
+*.obj
+*.log
+*.tlog
+*.tlog
+*.exe
+*.pdb
+*.exe
+*.user

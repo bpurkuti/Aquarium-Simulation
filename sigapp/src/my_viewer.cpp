@@ -91,7 +91,7 @@ void MyViewer::add_model(SnShape* s, GsVec p)
 	manip->visible(true); // call this to turn off mouse interaction
 	rootg()->add(manip);
 	rootg()->add(shadow); //adding shadow to the root
-	//rootg()->add(shadow); //adding shadow to the root
+	rootg()->add(shadow); //adding shadow to the root
 
 }
 
@@ -106,7 +106,7 @@ GsMat MyViewer::computeShadow()
 		0.0f, (-lz / ly), 1.0f, 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f);
 	GsMat tr;
-	tr.translation(GsVec(-200, -600, -800));
+	tr.translation(GsVec(-200, -350, -800));
 
 	GsMat d = tr * s;
 	return d;
@@ -226,6 +226,31 @@ void MyViewer::build_scene()
 	gspc->translate(GsVec(15, -10, 5));
 	gspc->scale(scale);
 	add_model(pc, GsVec(x, y, z));
+
+	//Box
+	/*SnModel* box = new SnModel;
+	box->model()->load_obj("../reefObjs/Box/Aquarium.obj");
+	GsModel* gsbox = box->model();
+	gsbox->translate(GsVec(20, 20, 20));
+	gsbox->scale(scale);
+	add_model(box, GsVec(x, y, z));*/
+
+	SnPrimitive* p;
+	p = new SnPrimitive(GsPrimitive::Box, 45, 0.5, 45);
+	p->prim().material.diffuse = GsColor::lightblue;
+	GsModel* d = p->model();
+	d->translate(GsVec(0, -400, 0));
+	d->scale(scale);
+	rootg()->add(p);
+
+	SnPrimitive* w;
+	w = new SnPrimitive(GsPrimitive::Box, 45, 18, 0.5);
+	w->prim().material.diffuse = GsColor::yellow;
+	GsModel* x = w->model();
+	x->translate(GsVec(0, 300, -1800));
+	x->scale(scale);
+	rootg()->add(w);
+
 
 }
 
