@@ -273,7 +273,6 @@ int MyViewer::handle_keyboard(const GsEvent & e)
 	case GsEvent::KeyEsc: gs_exit(); return 1;
 	default: gsout << "Key pressed: " << e.key << gsnl;
 
-		// the commented thing are what cause the code to crash
 	case 'q': { // +X
 		if (px < 1000) {
 			moveChar(5, 0, 0);
