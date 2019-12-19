@@ -11,11 +11,10 @@
 //TO DO LIST
 /*
 1. Animation on Reef Ojbects
-2. NPC Fish follow curves
 3. NON trivial Animation on ALL fishes
 4. Automated Movements for NPC Fishes
 5. Collision Detection
-6. Add Aquarium Object (Hollow, but exists for boundaries)
+7. Add water?
 */
 
 
@@ -24,12 +23,16 @@ double py = 0.0;
 double pz = 0.0;
 double x, y, z = 0.0;
 double npcC[3][4]; // coordinates, X,Y,Z, i=0->3 First is Coord (x,y,z), Second is the Fish
+//0 faces -Z, 1 faces +X, 2 faces +Z, 3 faces -X
 float degrees = (float)GS_PI / 180;
+float theta[1] = { 0.0 };
 //Slowly rotate coral by incrementing this variable
 float rr = 0;
 float rr2 = 0;
 
-float dir = 0;
+float dirX = 0;
+float dirY;
+float dirZ;
 //Default scale of the objs
 float scale = 40.0;
 
@@ -40,7 +43,7 @@ float af = pi / 100;
 MyViewer::MyViewer(int x, int y, int w, int h, const char* l) : WsViewer(x, y, w, h, l)
 {
 	_nbut = 0;
-	_animating = false;
+	_animating = true;
 	build_ui();
 	build_scene();
 
@@ -94,13 +97,11 @@ void MyViewer::add_model(SnShape* s, GsVec p)
 	manip->visible(true); // call this to turn off mouse interaction
 	rootg()->add(manip);
 	rootg()->add(shadow); //adding shadow to the root
-	rootg()->add(shadow); //adding shadow to the root
 
 }
 
 GsMat MyViewer::computeShadow()
 {
-
 	float lx = 5.0f;
 	float ly = 10.0f;
 	float lz = 15.0f;
@@ -115,18 +116,61 @@ GsMat MyViewer::computeShadow()
 	return d;
 }
 
-void MyViewer::moveNPC (float a, float b, float c) {
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 10; j++){
-				if (i == 0){ 
-					npcC[i][j] += a;
+void MyViewer::moveNPC(float a, float b, float c) {
+
+	for (int j = 0; j < 4; j++) { // for all fishies
+		// if X
+		if (dirX == 0) {
+			if (npcC[0][j] > -250) {
+				npcC[0][j] -= 5;
+				if (npcC[0][j] == -250) {
+					dirX = 1;
 				}
-				if (i == 1) {
-					npcC[i][j] += b;
+			}
+		}
+		if (dirX == 1) {
+			if (npcC[0][j] < 250) {
+				npcC[0][j] += 5;
+				if (npcC[0][j] == 250) {
+					dirX = 0;
 				}
-				if (i == 2) {
-					npcC[i][j] += c;
+			}
+		}
+
+		// if Y
+		if (dirY == 0) {
+			if (npcC[1][j] > -250) {
+				npcC[1][j] -= 5;
+				if (npcC[0][j] == -250) {
+					dirY = 1;
 				}
+			}
+		}
+		if (dirY== 1) {
+			if (npcC[1][j] < 250) {
+				npcC[1][j] += 5;
+				if (npcC[0][j] == 250) {
+					dirY = 0;
+				}
+			}
+		}
+
+		// if Z
+		if (dirZ == 0) {
+			if (npcC[2][j] > -250) {
+				npcC[2][j] -= 5;
+				if (npcC[0][j] == -250) {
+					dirZ = 1;
+				}
+			}
+		}
+		if (dirZ == 1) {
+			if (npcC[2][j] < 250) {
+				npcC[2][j] += 5;
+				if (npcC[0][j] == 250) {
+					dirZ = 0;
+				}
+			}
 		}
 	}
 
@@ -135,7 +179,7 @@ void MyViewer::moveNPC (float a, float b, float c) {
 	GsMat npFmat[npcNum];
 	// MOVES TOP ONE 10 TIMES
 	for (int i = 0; i < npcNum; i++) {
-		npF[i] = rootg()->get<SnManipulator>(i+1);
+		npF[i] = rootg()->get<SnManipulator>((i + 1) * 2);
 		npFmat[i] = npF[i]->mat();
 		npFmat[i].translation(GsVec(npcC[0][i], npcC[1][i], npcC[2][i]));
 		npF[i]->initial_mat(npFmat[i]);
@@ -143,6 +187,11 @@ void MyViewer::moveNPC (float a, float b, float c) {
 		render();
 		ws_check();
 	}
+}
+
+bool MyViewer::checkCollision() {
+
+	return true;
 }
 
 void MyViewer::build_scene()
@@ -153,7 +202,7 @@ void MyViewer::build_scene()
 	SnModel* playerFish = new SnModel;
 	playerFish->model()->load_obj("../reefObjs/PlayerFish/blackMoorFish.obj");
 	GsModel* pf = playerFish->model();
-	pf->translate(GsVec(5,5,5));
+	pf->translate(GsVec(5, 5, 5));
 	pf->scale(scale);
 	add_model(playerFish, GsVec(px, py, pz));
 
@@ -164,17 +213,17 @@ void MyViewer::build_scene()
 	npcC[1][0] = 250;
 	npcC[2][0] = 250;
 	//Fish 1
-	npcC[0][1] = -250;
-	npcC[1][1] = -250;
+	npcC[0][1] = 250;
+	npcC[1][1] = 250;
 	npcC[2][1] = 250;
 	//Fish 2
 	npcC[0][2] = 250;
 	npcC[1][2] = 250;
-	npcC[2][2] = -250;
+	npcC[2][2] = 250;
 	//Fish 3
-	npcC[0][3] = -250;
-	npcC[1][3] = -250;
-	npcC[2][3] = -250;
+	npcC[0][3] = 250;
+	npcC[1][3] = 250;
+	npcC[2][3] = 250;
 
 	// makes the fishes
 	const int npcNum = 4;
@@ -216,29 +265,30 @@ void MyViewer::build_scene()
 	add_model(sc3, GsVec(x, y, z));
 
 	// TreeCoral
-	SnModel* tc2 = new SnModel;
+	SnModel * tc2 = new SnModel;
 	tc2->model()->load_obj("../reefObjs/TreeCoral1/treeCoral1.obj");
-	GsModel* gstc2 = tc2->model();
+	GsModel * gstc2 = tc2->model();
 	gstc2->translate(GsVec(-15, -10, 0));
 	gstc2->scale(scale);
 	add_model(tc2, GsVec(x, y, z));
 
 	// Spiral Wire Coral
-	SnModel* swc = new SnModel;
+	SnModel * swc = new SnModel;
 	swc->model()->load_obj("../reefObjs/spiralWireCoral/spiralWireCoral.obj");
-	GsModel* gsswc = swc->model();
+	GsModel * gsswc = swc->model();
 	gsswc->translate(GsVec(13, -10, -2));
 	gsswc->scale(scale);
 	add_model(swc, GsVec(x, y, z));
 
 	// PillarCoral
-	SnModel* pc = new SnModel;
+	SnModel * pc = new SnModel;
 	pc->model()->load_obj("../reefObjs/pillarCoral/pillarCoral.obj");
-	GsModel* gspc = pc->model();
+	GsModel * gspc = pc->model();
 	gspc->translate(GsVec(15, -10, 5));
 	gspc->scale(scale);
 	add_model(pc, GsVec(x, y, z));
 
+	// BoxBox
 	//SoftCoral with two parts
 	//29-30
 	//SnModel* sc2 = new SnModel;
@@ -267,24 +317,21 @@ void MyViewer::build_scene()
 	SnPrimitive* p;
 	p = new SnPrimitive(GsPrimitive::Box, 45, 0.5, 45);
 	p->prim().material.diffuse = GsColor::lightblue;
-	GsModel* d = p->model();
+	GsModel * d = p->model();
 	d->translate(GsVec(0, -400, 0));
 	d->scale(scale);
 	rootg()->add(p);
 
-	SnPrimitive* w;
+	SnPrimitive * w;
 	w = new SnPrimitive(GsPrimitive::Box, 45, 18, 0.5);
 	w->prim().material.diffuse = GsColor::yellow;
-	GsModel* x = w->model();
-	x->translate(GsVec(0, 300, -1800));
+	GsModel * x = w->model();
+	x->translate(GsVec(0, 300, -1000));
 	x->scale(scale);
 	rootg()->add(w);
-
-
 }
 
-
-void MyViewer :: animateCoral(float a) 
+void MyViewer::animateCoral(float a) 
 {
 	//right key
 	//and left key
@@ -315,21 +362,57 @@ void MyViewer::moveChar( float a, float b, float c)
 	px += a;
 	py += b;
 	pz += c;
-	float d = 0;
 	SnManipulator* player = rootg()->get<SnManipulator>(0);
 	GsMat pMat = player->mat();
+	pMat.translation(GsVec(px, py, pz));
 	player->initial_mat(pMat);
 
-	//SnManipulator* shadow = rootg()->get<SnManipulator>(1);
-	//GsMat sMat = player->mat();
-	////sMat.translation();
-	//sMat.rcombtrans(GsVec(x, y, z));
-	//shadow->initial_mat(sMat);
-	//player->translation(GsVec(a,b,c));
+	SnManipulator* shadow = rootg()->get<SnManipulator>(1);
+	GsMat sMat = player->mat();
+	//sMat.translation();
+	sMat.rcombtrans(GsVec(x, y, z));
+	shadow->initial_mat(sMat);
+	player->translation(GsVec(a, b, c));
 	render();
 	ws_check();
 }
 
+void MyViewer::animate()
+{
+	if (_animating) return; // avoid recursive calls
+	_animating = true;
+
+	SnManipulator* manip = rootg()->get<SnManipulator>(2); // access one of the manipulators
+	GsMat m = manip->mat();
+
+	double s = 20;
+	
+	double frdt = 1.0 / (s); // delta time to reach given number of frames per second
+	double t = 0, lt = 0, t0 = gs_time();
+
+	double i = 0.0;
+
+	do // run for a while:
+	{
+		while (t - lt < frdt) { ws_check(); t = gs_time() - t0; } // wait until it is time for next frame
+		lt = t;
+		//gsout << i << gsnl;
+		if (i < s) { // rotate arm to interpolated angle
+		
+			moveNPC(1,1,1);
+			i++;
+			//gsout << "interpolate " << i << gsnl;
+		}
+		else if (i < (2 * s)) { // rotate arm to interpolated angle
+			
+			moveNPC(1, 1, 1);
+			i++;
+			//gsout << "interpolate " << i << gsnl;
+		}
+		moveNPC(1, 1, 1); // notify it needs redraw
+		ws_check(); // redraw now
+	} while (i < (2 * s));
+}
 
 int MyViewer::handle_keyboard(const GsEvent& e)
 {
@@ -338,88 +421,92 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 
 	switch (e.key)
 	{
-		case GsEvent::KeyEsc: gs_exit(); return 1;
-		default: gsout << "Key pressed: " << e.key << gsnl;
-		
-		// the commented thing are what cause the code to crash
-		case 'q':{ // +X
-			if (px < 1000) {
-				moveChar(5, 0, 0);
-			}
-			return 1;
-		}
-		case 'a':{ // -X
-			if (px > -1000) {
-				moveChar(-5, 0, 0);
-			}
-			return 1;
-		}
-		case 'w': { // +Y
-			if (py < 1000) {
-				moveChar(0, 5, 0);
-			}
-			return 1;
-		}
-		case 's':{ // -Y
-			if (py > -1000) {
-				moveChar(0, -5, 0);
-			}
-			return 1;
-		}
-		case 'e':{ // +Z
-			if (pz < 1000) {
-				moveChar(0, 0, 5);
-			}
-			return 1;
-		}
-		case 'd': { // -Z
-			if (pz > -1000) {
-				moveChar(0, 0, -5);
-			}
-			return 1;
-		}
-		case 'r': { // MOVE NPCs
-			moveNPC(1, 1, 1);
-			return 1;
-		}
-		case 'f': { // MOVE NPCs
-			moveNPC(-1, -1, -1);
-			return 1;
-		}
-		case GsEvent::KeyLeft:{
-			animateCoral(-1);
-			return 1;
-		}
-		case GsEvent::KeyRight:{
-			animateCoral(1);
+	case GsEvent::KeyEsc: gs_exit(); return 1;
+	default: gsout << "Key pressed: " << e.key << gsnl;
 
-			return 1;
+	case 'q': { // +X
+		if (px < 1000) {
+			moveChar(5, 0, 0);
 		}
-		case GsEvent::KeySpace:
-		{
-			//Moving camera up, could be improved to rotate around
-			/*double lt, t0 = gs_time();
-			do
-			{
-				lt = gs_time() - t0;
-
-				camera().eye.y += 2.5f;
-				camera().eye.z -= 3.0f;
-				camera().up.z += 0.001f;
-				render();
-				ws_check();
-				message().setf("local time=%f", lt);
-			} while (lt < 1.5f);*/
-		}
+		return 1;
 	}
-	return 0;
-}
+	case 'a': { // -X
+		if (px > -1000) {
+			moveChar(-5, 0, 0);
+		}
+		return 1;
+	}
+	case 'w': { // +Y
+		if (py < 700) {
+			moveChar(0, 5, 0);
+		}
+		return 1;
+	}
+	case 's': { // -Y
+		if (py > -500) {
+			moveChar(0, -5, 0);
+		}
+		return 1;
+	}
+	case 'e': { // +Z
+		if (pz < 1000) {
+			moveChar(0, 0, 5);
+		}
+		return 1;
+	}
+	case 'd': { // -Z
+		if (pz > -1000) {
+			moveChar(0, 0, -5);
+			return 1;
+		}
+	case 'r': { // MOVE NPCs
+		moveNPC(1, 1, 1);
+		return 1;
+	}
+	case 'f': { // MOVE NPCs
+		moveNPC(-1, -1, -1);
+		return 1;
+	}
+	case GsEvent::KeyLeft: {
+		animateCoral(-1);
+		return 1;
+	}
+	case GsEvent::KeyUp: {
+		return 1;
+	}
+	case GsEvent::KeyRight: {
+		animateCoral(1);
+		return 1;
+	}
+	case GsEvent::KeyDown: {
+		return 1;
+	}
+	case GsEvent::KeySpace:
+	{
+		_animating = true;
+		//Moving camera up, could be improved to rotate around
+		double lt, t0 = gs_time();
+		do
+		{
+			lt = gs_time() - t0;
 
+			camera().eye.y += 2.5f;
+			camera().eye.z -= 3.0f;
+			camera().up.z += 0.001f;
+			render();
+			ws_check();
+			message().setf("local time=%f", lt);
+		} while (lt < 1.5f);
+	}
+	}
+			  return 0;
+	}
+}
 int MyViewer::uievent(int e)
 {
 	switch (e)
 	{
-		case EvExit: gs_exit();
+	case EvExit: gs_exit();
 	}
 	return WsViewer::uievent(e);
 }
