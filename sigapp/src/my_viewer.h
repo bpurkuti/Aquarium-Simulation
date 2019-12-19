@@ -24,6 +24,7 @@ class MyViewer : public WsViewer
 	void animate();
 
 	void moveNPC(float a, float b, float c);
+	double moveCurves(float x, float y, float z, double dist);
 	void moveChar( float a, float b, float c);
 	bool checkCollision(float x, float y, float z, float dir);
 	void animateCoral(float a);
