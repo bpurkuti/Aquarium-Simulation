@@ -250,6 +250,7 @@ void MyViewer::moveChar(float a, float b, float c)
 	pz += c;
 	SnManipulator* player = rootg()->get<SnManipulator>(0);
 	GsMat pMat = player->mat();
+	pMat.translation(GsVec(px, py, pz));
 	player->initial_mat(pMat);
 
 	SnManipulator* shadow = rootg()->get<SnManipulator>(1);
