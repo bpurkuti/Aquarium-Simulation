@@ -14,25 +14,21 @@
 3. NON trivial Animation on ALL fishes
 4. Automated Movements for NPC Fishes
 5. Collision Detection
-7. Add water?
 */
 
-double disten = 0; // distance for the NPC Fishies
+
 double px = 0.0;
 double py = 0.0;
 double pz = 0.0;
 double x, y, z = 0.0;
 double npcC[3][4]; // coordinates, X,Y,Z, i=0->3 First is Coord (x,y,z), Second is the Fish
-//0 faces -Z, 1 faces +X, 2 faces +Z, 3 faces -X
 float degrees = (float)GS_PI / 180;
 float theta[1] = { 0.0 };
 //Slowly rotate coral by incrementing this variable
 float rr = 0;
 float rr2 = 0;
 
-// for the curves
-
-float dirX;
+float dirX = 0;
 float dirY;
 float dirZ;
 //Default scale of the objs
@@ -191,65 +187,6 @@ void MyViewer::moveNPC(float a, float b, float c) {
 	}
 }
 
-double MyViewer::moveCurves(float x, float y, float z, double dist) {
-	// takes in a position and a distance traveled
-
-	//does the traveling
-	if (((int)dist %560) < 140){
-		for (int i = 0; i < 4; i++) {
-			npcC[0][i] += x;
-			npcC[1][i] += y;
-			npcC[2][i] += z;
-		}
-	}
-	else if (((int)dist % 560) > 140 && ((int)dist % 560)  < 280){
-		for (int i = 0; i < 4; i++) {
-			npcC[0][i] -= x;
-			npcC[1][i] -= y;
-			npcC[2][i] += z;
-		}
-		
-	}
-	else if (((int)dist % 560) > 280 && ((int)dist % 560) < 420) {
-		for (int i = 0; i < 4; i++) {
-			npcC[0][i] += x;
-			npcC[1][i] -= y;
-			npcC[2][i] += z;
-		}
-	}
-	else if (((int)dist % 560) > 420 && ((int)dist % 560) < 560) {
-		for (int i = 0; i < 4; i++) {
-			npcC[0][i] -= x;
-			npcC[1][i] += y;
-			npcC[2][i] -= z;
-		}
-	}
-
-	const int npcNum = 4;
-	SnManipulator* npF[npcNum];
-	GsMat npFmat[npcNum];
-	// MOVES TOP ONE 10 TIMES
-	for (int i = 0; i < npcNum; i++) {
-		npF[i] = rootg()->get<SnManipulator>((i + 1) * 2);
-		npFmat[i] = npF[i]->mat();
-		npFmat[i].translation(GsVec(npcC[0][i], npcC[1][i], npcC[2][i]));
-		npF[i]->initial_mat(npFmat[i]);
-		npF[i]->translation(GsVec(x, y, z));
-		render();
-		ws_check();
-	}
-
-	return dist + 1;
-}
-
-bool MyViewer::checkCollision(float x, float y, float z, float dir){
-	// basically checks if the fish is running into any other object
-	
-
-
-	return true;
-}
-
 void MyViewer::build_scene()
 {
 	rootg()->remove_all();
@@ -269,17 +206,17 @@ void MyViewer::build_scene()
 	npcC[1][0] = 250;
 	npcC[2][0] = 250;
 	//Fish 1
-	npcC[0][1] = 250;
+	npcC[0][1] = -250;
 	npcC[1][1] = 250;
-	npcC[2][1] = -250;
+	npcC[2][1] = 250;
 	//Fish 2
 	npcC[0][2] = -250;
 	npcC[1][2] = 250;
 	npcC[2][2] = -250;
 	//Fish 3
-	npcC[0][3] = -250;
+	npcC[0][3] = 250;
 	npcC[1][3] = 250;
-	npcC[2][3] = 250;
+	npcC[2][3] = -250;
 
 	// makes the fishes
 	const int npcNum = 4;
@@ -304,21 +241,12 @@ void MyViewer::build_scene()
 	add_model(tc1, GsVec(x, y, z));
 
 	//Soft Coral
-	//20
-	SnModel* sc2 = new SnModel;
-	sc2->model()->load_obj("../reefObjs/softCoral/softCoralTop.obj");
-	GsModel* gssc2 = sc2->model();
-	gssc2->translate(GsVec(-13, -10, -5));
-	gssc2->scale(scale);
-	add_model(sc2, GsVec(x, y, z));
-
-	//22
-	SnModel* sc3 = new SnModel;
-	sc3->model()->load_obj("../reefObjs/softCoral/softCoralBot.obj");
-	GsModel* gssc3 = sc3->model();
-	gssc3->translate(GsVec(-13, -10, -5));
-	gssc3->scale(scale);
-	add_model(sc3, GsVec(x, y, z));
+	SnModel* sc = new SnModel;
+	sc->model()->load_obj("../reefObjs/softCoral/softCoral.obj");
+	GsModel* gssc = sc->model();
+	gssc->translate(GsVec(-10, -10, -10));
+	gssc->scale(scale);
+	add_model(sc, GsVec(x, y, z));
 
 	// TreeCoral
 	SnModel * tc2 = new SnModel;
@@ -344,6 +272,32 @@ void MyViewer::build_scene()
 	gspc->scale(scale);
 	add_model(pc, GsVec(x, y, z));
 
+	// BoxBox
+	//SoftCoral with two parts
+	//29-30
+	SnModel* sc2 = new SnModel;
+	sc2->model()->load_obj("../reefObjs/softCoral/softCoralTop.obj");
+	GsModel* gssc2 = sc2->model();
+	gssc2->translate(GsVec(10, 10, 10));
+	gssc2->scale(scale);
+	add_model(sc2, GsVec(x, y, z));
+
+	//31-32
+	SnModel* sc3 = new SnModel;
+	sc3->model()->load_obj("../reefObjs/softCoral/softCoralBot.obj");
+	GsModel* gssc3 = sc3->model();
+	gssc3->translate(GsVec(10, 10, 10));
+	gssc3->scale(scale);
+	add_model(sc3, GsVec(x, y, z));
+
+	//Box
+	/*SnModel* box = new SnModel;
+	box->model()->load_obj("../reefObjs/Box/Aquarium.obj");
+	GsModel* gsbox = box->model();
+	gsbox->translate(GsVec(20, 20, 20));
+	gsbox->scale(scale);
+	add_model(box, GsVec(x, y, z));*/
+
 	SnPrimitive* p;
 	p = new SnPrimitive(GsPrimitive::Box, 45, 0.5, 45);
 	p->prim().material.diffuse = GsColor::lightblue;
@@ -361,10 +315,28 @@ void MyViewer::build_scene()
 	rootg()->add(w);
 }
 
-void MyViewer::animateCoral(float a) 
+void MyViewer::moveChar(float a, float b, float c)
+
+void MyViewer :: animateCoral(float a) 
 {
-	//right key
-	//and left key
+	//float rotAmt;
+
+	/*if (rr2 == -3) {
+		rr = (float)(rr + 0.2);
+		rotAmt = (float)(rr);
+		if (rr >= 3) {
+			rr2 = 3;
+		}
+	}
+	else {
+		rr2= (float)(rr2-0.2);
+		rotAmt = (float)(rr2);
+		if (rr <= -3) {
+			rr2 = -3;
+			rr = -3;
+		}
+	}*/
+
 	if (a < 0)
 	{
 		if(rr <3) {
@@ -379,7 +351,7 @@ void MyViewer::animateCoral(float a)
 	}
 
 
-	SnManipulator* player = rootg()->get<SnManipulator>(20);
+	SnManipulator* player = rootg()->get<SnManipulator>(30);
 	GsMat pMat = player->mat();
 	pMat.rotz(rr * degrees);
 	player->initial_mat(pMat);
@@ -444,7 +416,7 @@ void MyViewer::animate()
 	} while (i < (2 * s));
 }
 
-int MyViewer::handle_keyboard(const GsEvent& e)
+int MyViewer::handle_keyboard(const GsEvent & e)
 {
 	int ret = WsViewer::handle_keyboard(e); // 1st let system check events
 	if (ret) return ret;
@@ -454,41 +426,50 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 	case GsEvent::KeyEsc: gs_exit(); return 1;
 	default: gsout << "Key pressed: " << e.key << gsnl;
 
-	//case 'q': { // +X
-	//	if (px < 700 && checkCollision(px, py, pz, 1)) {
-	//		moveChar(5, 0, 0);
-	//	}
-	//	return 1;
-	//}
-	//case 'a': { // -X
-	//	if (px > -700 && checkCollision(px, py, pz, -1)) {
-	//		moveChar(-5, 0, 0);
-	//	}
-	//	return 1;
-	//}
-	//case 'w': { // +Y
-	//	if (py < 700 && checkCollision(px, py, pz, 2)) {
-	//		moveChar(0, 5, 0);
-	//	}
-	//	return 1;
-	//}
-	//case 's': { // -Y
-	//	if (py > -500 && checkCollision(px, py, pz, -2)) {
-	//		moveChar(0, -5, 0);
-	//	}
-	//	return 1;
-	//}
-	//case 'e': { // +Z
-	//	if (pz < 700 && checkCollision(px, py, pz, 3)) {
-	//		moveChar(0, 0, 5);
-	//	}
-	//	return 1;
-	//}
-	//case 'd': { // -Z
-	//	if (pz > -700 && checkCollision(px, py, pz, -3)) {
-	//		moveChar(0, 0, -5);
-	//		return 1;
-	//	}
+	case 'q': { // +X
+		if (px < 1000) {
+			moveChar(5, 0, 0);
+		}
+		return 1;
+	}
+	case 'a': { // -X
+		if (px > -1000) {
+			moveChar(-5, 0, 0);
+		}
+		return 1;
+	}
+	case 'w': { // +Y
+		if (py < 700) {
+			moveChar(0, 5, 0);
+		}
+		return 1;
+	}
+	case 's': { // -Y
+		if (py > -500) {
+			moveChar(0, -5, 0);
+		}
+		return 1;
+	}
+	case 'e': { // +Z
+		if (pz < 1000) {
+			moveChar(0, 0, 5);
+		}
+		return 1;
+	}
+	case 'd': { // -Z
+		if (pz > -1000) {
+			moveChar(0, 0, -5);
+		case GsEvent::KeyLeft:{
+			animateCoral(-1);
+			return 1;
+		}
+		case GsEvent::KeyRight:{
+			animateCoral(1);
+
+			return 1;
+		}
+		return 1;
+	}
 	case 'r': { // MOVE NPCs
 		moveNPC(1, 1, 1);
 		return 1;
@@ -498,14 +479,12 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 		return 1;
 	}
 	case GsEvent::KeyLeft: {
-		animateCoral(-1);
 		return 1;
 	}
 	case GsEvent::KeyUp: {
 		return 1;
 	}
 	case GsEvent::KeyRight: {
-		animateCoral(1);
 		return 1;
 	}
 	case GsEvent::KeyDown: {
@@ -520,19 +499,18 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 		{
 			lt = gs_time() - t0;
 
-			/*camera().eye.y += 2.5f;
+			camera().eye.y += 2.5f;
 			camera().eye.z -= 3.0f;
 			camera().up.z += 0.001f;
 			render();
 			ws_check();
-			message().setf("local time=%f", lt);*/
-			disten = moveCurves(2, 2, 2, disten);
-		} while (lt < 1200.0f);
+			message().setf("local time=%f", lt);
+		} while (lt < 1.5f);
 	}
 	}
-			  return 0;
-	}
-//}
+	return 0;
+}
+
 int MyViewer::uievent(int e)
 {
 	switch (e)
