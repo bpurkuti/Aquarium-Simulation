@@ -130,7 +130,7 @@ void MyViewer::moveNPC(float a, float b, float c) {
 	GsMat npFmat[npcNum];
 	// MOVES TOP ONE 10 TIMES
 	for (int i = 0; i < npcNum; i++) {
-		npF[i] = rootg()->get<SnManipulator>(i + 1);
+		npF[i] = rootg()->get<SnManipulator>((i + 1) * 2);
 		npFmat[i] = npF[i]->mat();
 		npFmat[i].translation(GsVec(npcC[0][i], npcC[1][i], npcC[2][i]));
 		npF[i]->initial_mat(npFmat[i]);
@@ -238,7 +238,7 @@ void MyViewer::build_scene()
 	w = new SnPrimitive(GsPrimitive::Box, 45, 18, 0.5);
 	w->prim().material.diffuse = GsColor::yellow;
 	GsModel * x = w->model();
-	x->translate(GsVec(0, 300, -1800));
+	x->translate(GsVec(0, 300, -1000));
 	x->scale(scale);
 	rootg()->add(w);
 }
@@ -292,7 +292,7 @@ int MyViewer::handle_keyboard(const GsEvent & e)
 		return 1;
 	}
 	case 's': { // -Y
-		if (py > -1000) {
+		if (py > -500) {
 			moveChar(0, -5, 0);
 		}
 		return 1;
