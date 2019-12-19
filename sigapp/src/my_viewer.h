@@ -21,6 +21,7 @@ class MyViewer : public WsViewer
 	void build_scene ();
 	virtual int handle_keyboard ( const GsEvent &e ) override;
 	virtual int uievent ( int e ) override;
+	void animate();
 
 	void moveNPC(float a, float b, float c);
 	void moveChar( float a, float b, float c);

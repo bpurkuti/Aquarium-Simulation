@@ -11,11 +11,9 @@
 //TO DO LIST
 /*
 1. Animation on Reef Ojbects
-2. NPC Fish follow curves
 3. NON trivial Animation on ALL fishes
 4. Automated Movements for NPC Fishes
 5. Collision Detection
-6. Add Aquarium Object (Hollow, but exists for boundaries)
 */
 
 
@@ -25,8 +23,11 @@ double pz = 0.0;
 double x, y, z = 0.0;
 double npcC[3][4]; // coordinates, X,Y,Z, i=0->3 First is Coord (x,y,z), Second is the Fish
 float degrees = (float)GS_PI / 180;
+float theta[1] = { 0.0 };
 
-float dir = 0;
+float dirX = 0;
+float dirY;
+float dirZ;
 //Default scale of the objs
 float scale = 40.0;
 
@@ -37,7 +38,7 @@ float af = pi / 100;
 MyViewer::MyViewer(int x, int y, int w, int h, const char* l) : WsViewer(x, y, w, h, l)
 {
 	_nbut = 0;
-	_animating = false;
+	_animating = true;
 	build_ui();
 	build_scene();
 
@@ -111,16 +112,59 @@ GsMat MyViewer::computeShadow()
 }
 
 void MyViewer::moveNPC(float a, float b, float c) {
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 10; j++) {
-			if (i == 0) {
-				npcC[i][j] += a;
+
+	for (int j = 0; j < 4; j++) { // for all fishies
+		// if X
+		if (dirX == 0) {
+			if (npcC[0][j] > -250) {
+				npcC[0][j] -= 5;
+				if (npcC[0][j] == -250) {
+					dirX = 1;
+				}
 			}
-			if (i == 1) {
-				npcC[i][j] += b;
+		}
+		if (dirX == 1) {
+			if (npcC[0][j] < 250) {
+				npcC[0][j] += 5;
+				if (npcC[0][j] == 250) {
+					dirX = 0;
+				}
 			}
-			if (i == 2) {
-				npcC[i][j] += c;
+		}
+
+		// if Y
+		if (dirY == 0) {
+			if (npcC[1][j] > -250) {
+				npcC[1][j] -= 5;
+				if (npcC[0][j] == -250) {
+					dirY = 1;
+				}
+			}
+		}
+		if (dirY== 1) {
+			if (npcC[1][j] < 250) {
+				npcC[1][j] += 5;
+				if (npcC[0][j] == 250) {
+					dirY = 0;
+				}
+			}
+		}
+
+		// if Z
+		if (dirZ == 0) {
+			if (npcC[2][j] > -250) {
+				npcC[2][j] -= 5;
+				if (npcC[0][j] == -250) {
+					dirZ = 1;
+				}
+			}
+		}
+		if (dirZ == 1) {
+			if (npcC[2][j] < 250) {
+				npcC[2][j] += 5;
+				if (npcC[0][j] == 250) {
+					dirZ = 0;
+				}
 			}
 		}
 	}
@@ -263,6 +307,43 @@ void MyViewer::moveChar(float a, float b, float c)
 	ws_check();
 }
 
+void MyViewer::animate()
+{
+	if (_animating) return; // avoid recursive calls
+	_animating = true;
+
+	SnManipulator* manip = rootg()->get<SnManipulator>(2); // access one of the manipulators
+	GsMat m = manip->mat();
+
+	double s = 20;
+	
+	double frdt = 1.0 / (s); // delta time to reach given number of frames per second
+	double t = 0, lt = 0, t0 = gs_time();
+
+	double i = 0.0;
+
+	do // run for a while:
+	{
+		while (t - lt < frdt) { ws_check(); t = gs_time() - t0; } // wait until it is time for next frame
+		lt = t;
+		//gsout << i << gsnl;
+		if (i < s) { // rotate arm to interpolated angle
+		
+			moveNPC(1,1,1);
+			i++;
+			//gsout << "interpolate " << i << gsnl;
+		}
+		else if (i < (2 * s)) { // rotate arm to interpolated angle
+			
+			moveNPC(1, 1, 1);
+			i++;
+			//gsout << "interpolate " << i << gsnl;
+		}
+		moveNPC(1, 1, 1); // notify it needs redraw
+		ws_check(); // redraw now
+	} while (i < (2 * s));
+}
+
 int MyViewer::handle_keyboard(const GsEvent & e)
 {
 	int ret = WsViewer::handle_keyboard(e); // 1st let system check events
@@ -286,7 +367,7 @@ int MyViewer::handle_keyboard(const GsEvent & e)
 		return 1;
 	}
 	case 'w': { // +Y
-		if (py < 1000) {
+		if (py < 700) {
 			moveChar(0, 5, 0);
 		}
 		return 1;
@@ -331,8 +412,9 @@ int MyViewer::handle_keyboard(const GsEvent & e)
 	}
 	case GsEvent::KeySpace:
 	{
+		_animating = true;
 		//Moving camera up, could be improved to rotate around
-		/*double lt, t0 = gs_time();
+		double lt, t0 = gs_time();
 		do
 		{
 			lt = gs_time() - t0;
@@ -343,7 +425,7 @@ int MyViewer::handle_keyboard(const GsEvent & e)
 			render();
 			ws_check();
 			message().setf("local time=%f", lt);
-		} while (lt < 1.5f);*/
+		} while (lt < 1.5f);
 	}
 	}
 	return 0;
