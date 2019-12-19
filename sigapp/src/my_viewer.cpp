@@ -25,6 +25,9 @@ double pz = 0.0;
 double x, y, z = 0.0;
 double npcC[3][4]; // coordinates, X,Y,Z, i=0->3 First is Coord (x,y,z), Second is the Fish
 float degrees = (float)GS_PI / 180;
+//Slowly rotate coral by incrementing this variable
+float rr = 0;
+float rr2 = 0;
 
 float dir = 0;
 //Default scale of the objs
@@ -227,6 +230,23 @@ void MyViewer::build_scene()
 	gspc->scale(scale);
 	add_model(pc, GsVec(x, y, z));
 
+	//SoftCoral with two parts
+	//29-30
+	SnModel* sc2 = new SnModel;
+	sc2->model()->load_obj("../reefObjs/softCoral/softCoralTop.obj");
+	GsModel* gssc2 = sc2->model();
+	gssc2->translate(GsVec(10, 10, 10));
+	gssc2->scale(scale);
+	add_model(sc2, GsVec(x, y, z));
+
+	//31-32
+	SnModel* sc3 = new SnModel;
+	sc3->model()->load_obj("../reefObjs/softCoral/softCoralBot.obj");
+	GsModel* gssc3 = sc3->model();
+	gssc3->translate(GsVec(10, 10, 10));
+	gssc3->scale(scale);
+	add_model(sc3, GsVec(x, y, z));
+
 	//Box
 	/*SnModel* box = new SnModel;
 	box->model()->load_obj("../reefObjs/Box/Aquarium.obj");
@@ -252,6 +272,49 @@ void MyViewer::build_scene()
 	rootg()->add(w);
 
 
+}
+
+
+void MyViewer :: animateCoral(float a) 
+{
+	//float rotAmt;
+
+	/*if (rr2 == -3) {
+		rr = (float)(rr + 0.2);
+		rotAmt = (float)(rr);
+		if (rr >= 3) {
+			rr2 = 3;
+		}
+	}
+	else {
+		rr2= (float)(rr2-0.2);
+		rotAmt = (float)(rr2);
+		if (rr <= -3) {
+			rr2 = -3;
+			rr = -3;
+		}
+	}*/
+
+	if (a < 0)
+	{
+		if(rr <3) {
+			rr = (float)(rr + 0.2);
+		}
+	}
+	else
+	{
+		if (rr > -3) {
+			rr = (float)(rr - 0.2);
+		}
+	}
+
+
+	SnManipulator* player = rootg()->get<SnManipulator>(30);
+	GsMat pMat = player->mat();
+	pMat.rotz(rr * degrees);
+	player->initial_mat(pMat);
+	render();
+	ws_check();
 }
 
 void MyViewer::moveChar( float a, float b, float c)
@@ -331,10 +394,12 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 			return 1;
 		}
 		case GsEvent::KeyLeft:{
-
+			animateCoral(-1);
 			return 1;
 		}
-		case GsEvent::KeyDown:{
+		case GsEvent::KeyRight:{
+			animateCoral(1);
+
 			return 1;
 		}
 		case GsEvent::KeySpace:
