@@ -189,7 +189,10 @@ void MyViewer::moveNPC(float a, float b, float c) {
 	}
 }
 
-bool MyViewer::checkCollision() {
+bool MyViewer::checkCollision(float x, float y, float z, float dir){
+	// basically checks if the fish is running into any other object
+	
+
 
 	return true;
 }
@@ -432,37 +435,37 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 	default: gsout << "Key pressed: " << e.key << gsnl;
 
 	case 'q': { // +X
-		if (px < 1000) {
+		if (px < 700 && checkCollision(px, py, pz, 1)) {
 			moveChar(5, 0, 0);
 		}
 		return 1;
 	}
 	case 'a': { // -X
-		if (px > -1000) {
+		if (px > -700 && checkCollision(px, py, pz, -1)) {
 			moveChar(-5, 0, 0);
 		}
 		return 1;
 	}
 	case 'w': { // +Y
-		if (py < 700) {
+		if (py < 700 && checkCollision(px, py, pz, 2)) {
 			moveChar(0, 5, 0);
 		}
 		return 1;
 	}
 	case 's': { // -Y
-		if (py > -500) {
+		if (py > -500 && checkCollision(px, py, pz, -2)) {
 			moveChar(0, -5, 0);
 		}
 		return 1;
 	}
 	case 'e': { // +Z
-		if (pz < 1000) {
+		if (pz < 700 && checkCollision(px, py, pz, 3)) {
 			moveChar(0, 0, 5);
 		}
 		return 1;
 	}
 	case 'd': { // -Z
-		if (pz > -1000) {
+		if (pz > -700 && checkCollision(px, py, pz, -3)) {
 			moveChar(0, 0, -5);
 			return 1;
 		}
