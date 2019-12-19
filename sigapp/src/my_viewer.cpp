@@ -315,28 +315,9 @@ void MyViewer::build_scene()
 	rootg()->add(w);
 }
 
-void MyViewer::moveChar(float a, float b, float c)
 
 void MyViewer :: animateCoral(float a) 
 {
-	//float rotAmt;
-
-	/*if (rr2 == -3) {
-		rr = (float)(rr + 0.2);
-		rotAmt = (float)(rr);
-		if (rr >= 3) {
-			rr2 = 3;
-		}
-	}
-	else {
-		rr2= (float)(rr2-0.2);
-		rotAmt = (float)(rr2);
-		if (rr <= -3) {
-			rr2 = -3;
-			rr = -3;
-		}
-	}*/
-
 	if (a < 0)
 	{
 		if(rr <3) {
@@ -416,7 +397,7 @@ void MyViewer::animate()
 	} while (i < (2 * s));
 }
 
-int MyViewer::handle_keyboard(const GsEvent & e)
+int MyViewer::handle_keyboard(const GsEvent& e)
 {
 	int ret = WsViewer::handle_keyboard(e); // 1st let system check events
 	if (ret) return ret;
@@ -459,17 +440,17 @@ int MyViewer::handle_keyboard(const GsEvent & e)
 	case 'd': { // -Z
 		if (pz > -1000) {
 			moveChar(0, 0, -5);
-		case GsEvent::KeyLeft:{
-			animateCoral(-1);
-			return 1;
-		}
-		case GsEvent::KeyRight:{
-			animateCoral(1);
-
-			return 1;
-		}
+	case GsEvent::KeyLeft: {
+		animateCoral(-1);
 		return 1;
 	}
+	case GsEvent::KeyRight: {
+		animateCoral(1);
+
+		return 1;
+	}
+							return 1;
+		}
 	case 'r': { // MOVE NPCs
 		moveNPC(1, 1, 1);
 		return 1;
@@ -478,13 +459,8 @@ int MyViewer::handle_keyboard(const GsEvent & e)
 		moveNPC(-1, -1, -1);
 		return 1;
 	}
-	case GsEvent::KeyLeft: {
-		return 1;
-	}
+
 	case GsEvent::KeyUp: {
-		return 1;
-	}
-	case GsEvent::KeyRight: {
 		return 1;
 	}
 	case GsEvent::KeyDown: {
@@ -508,7 +484,8 @@ int MyViewer::handle_keyboard(const GsEvent & e)
 		} while (lt < 1.5f);
 	}
 	}
-	return 0;
+			  return 0;
+	}
 }
 
 int MyViewer::uievent(int e)
