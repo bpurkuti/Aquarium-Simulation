@@ -36,10 +36,15 @@ float dirZ;
 //Default scale of the objs
 float scale = 40.0;
 
+//GsBox bounding box
+//of fish 1
+GsBox bb;
+//of softCoral
+GsBox bbsc;
 //These variables keep track of where the joints are
 float pi = 3.14f;
 float af = pi / 100;
-
+float lastState=0;
 MyViewer::MyViewer(int x, int y, int w, int h, const char* l) : WsViewer(x, y, w, h, l)
 {
 	_nbut = 0;
@@ -190,8 +195,12 @@ void MyViewer::moveNPC(float a, float b, float c) {
 }
 
 bool MyViewer::checkCollision() {
-
-	return true;
+	//GsPnt center = bbsc.center;
+	if (bb.contains(bbsc.a))
+	{
+		return true;
+	}
+	return false;
 }
 
 void MyViewer::build_scene()
@@ -202,6 +211,7 @@ void MyViewer::build_scene()
 	SnModel* playerFish = new SnModel;
 	playerFish->model()->load_obj("../reefObjs/PlayerFish/blackMoorFish.obj");
 	GsModel* pf = playerFish->model();
+	pf->get_bounding_box(bb);
 	pf->translate(GsVec(5, 5, 5));
 	pf->scale(scale);
 	add_model(playerFish, GsVec(px, py, pz));
@@ -252,6 +262,7 @@ void MyViewer::build_scene()
 	SnModel* sc2 = new SnModel;
 	sc2->model()->load_obj("../reefObjs/softCoral/softCoralTop.obj");
 	GsModel* gssc2 = sc2->model();
+	gssc2->get_bounding_box(bbsc);
 	gssc2->translate(GsVec(-13, -10, -5));
 	gssc2->scale(scale);
 	add_model(sc2, GsVec(x, y, z));
@@ -335,23 +346,34 @@ void MyViewer::animateCoral(float a)
 {
 	//right key
 	//and left key
-	if (a < 0)
-	{
-		if(rr <3) {
-			rr = (float)(rr + 0.2);
-		}
-	}
-	else
-	{
-		if (rr > -3) {
-			rr = (float)(rr - 0.2);
-		}
-	}
+	//if (a < 0)
+	//{
+	//	if(rr <3) {
+	//		rr = (float)(rr + 0.2);
+	//	}
+	//}
+	//else
+	//{
+	//	if (rr > -3) {
+	//		rr = (float)(rr - 0.2);
+	//	}
+	//}
 
-
-	SnManipulator* player = rootg()->get<SnManipulator>(20);
+	if (rr >= 3) {
+		lastState = 3;
+	}
+	if (lastState==0) {
+		rr = (float)(rr + 0.2);
+	}
+	if (lastState == 3) {
+		rr = (float)(rr - 0.2);
+	}
+	if (rr <= -3) {
+		lastState = 0;
+	}
+	SnManipulator* player = rootg()->get<SnManipulator>(12);
 	GsMat pMat = player->mat();
-	pMat.rotz(rr * degrees);
+	pMat.roty(rr * degrees);
 	player->initial_mat(pMat);
 	render();
 	ws_check();
@@ -426,24 +448,28 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 
 	case 'q': { // +X
 		if (px < 1000) {
+			checkCollision();
 			moveChar(5, 0, 0);
 		}
 		return 1;
 	}
 	case 'a': { // -X
 		if (px > -1000) {
+			checkCollision();
 			moveChar(-5, 0, 0);
 		}
 		return 1;
 	}
 	case 'w': { // +Y
 		if (py < 700) {
+			checkCollision();
 			moveChar(0, 5, 0);
 		}
 		return 1;
 	}
 	case 's': { // -Y
 		if (py > -500) {
+			checkCollision();
 			moveChar(0, -5, 0);
 		}
 		return 1;
@@ -467,6 +493,21 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 		moveNPC(-1, -1, -1);
 		return 1;
 	}
+
+	//case 'j': {
+	//	if (checkCollision() == true)
+	//	{
+	//		message().setf("Collision= True");
+	//		message().setf("BoundingBoxPoint %f", bb.a);
+	//	}
+	//	else
+	//	{
+	//		message().setf("Collision= False");
+	//		message().setf("BoundingBoxPoint %f", bb.a, bb.b);
+
+	//	}
+	//	return 1;
+	//}
 	case GsEvent::KeyLeft: {
 		animateCoral(-1);
 		return 1;
@@ -488,15 +529,18 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 		double lt, t0 = gs_time();
 		do
 		{
+			moveNPC(-1, -1, -1);
+			animateCoral(-1);
+
 			lt = gs_time() - t0;
 
-			camera().eye.y += 2.5f;
-			camera().eye.z -= 3.0f;
-			camera().up.z += 0.001f;
-			render();
-			ws_check();
-			message().setf("local time=%f", lt);
-		} while (lt < 1.5f);
+			//camera().eye.y += 2.5f;
+			//camera().eye.z -= 3.0f;
+			//camera().up.z += 0.001f;
+			//render();
+			//ws_check();
+			//message().setf("local time=%f", lt);
+		} while (lt < 15);
 	}
 	}
 			  return 0;
