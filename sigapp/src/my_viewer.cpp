@@ -187,6 +187,14 @@ void MyViewer::moveNPC(float a, float b, float c) {
 	}
 }
 
+<<<<<<< HEAD
+=======
+bool MyViewer::checkCollision() {
+
+	return true;
+}
+
+>>>>>>> parent of d9a975d... Idle animation for COral
 void MyViewer::build_scene()
 {
 	rootg()->remove_all();
@@ -241,12 +249,30 @@ void MyViewer::build_scene()
 	add_model(tc1, GsVec(x, y, z));
 
 	//Soft Coral
+<<<<<<< HEAD
 	SnModel* sc = new SnModel;
 	sc->model()->load_obj("../reefObjs/softCoral/softCoral.obj");
 	GsModel* gssc = sc->model();
 	gssc->translate(GsVec(-10, -10, -10));
 	gssc->scale(scale);
 	add_model(sc, GsVec(x, y, z));
+=======
+	//20
+	SnModel* sc2 = new SnModel;
+	sc2->model()->load_obj("../reefObjs/softCoral/softCoralTop.obj");
+	GsModel* gssc2 = sc2->model();
+	gssc2->translate(GsVec(-13, -10, -5));
+	gssc2->scale(scale);
+	add_model(sc2, GsVec(x, y, z));
+
+	//22
+	SnModel* sc3 = new SnModel;
+	sc3->model()->load_obj("../reefObjs/softCoral/softCoralBot.obj");
+	GsModel* gssc3 = sc3->model();
+	gssc3->translate(GsVec(-13, -10, -5));
+	gssc3->scale(scale);
+	add_model(sc3, GsVec(x, y, z));
+>>>>>>> parent of d9a975d... Idle animation for COral
 
 	// TreeCoral
 	SnModel * tc2 = new SnModel;
@@ -318,6 +344,11 @@ void MyViewer::build_scene()
 
 void MyViewer :: animateCoral(float a) 
 {
+<<<<<<< HEAD
+=======
+	//right key
+	//and left key
+>>>>>>> parent of d9a975d... Idle animation for COral
 	if (a < 0)
 	{
 		if(rr <3) {
@@ -332,7 +363,11 @@ void MyViewer :: animateCoral(float a)
 	}
 
 
+<<<<<<< HEAD
 	SnManipulator* player = rootg()->get<SnManipulator>(30);
+=======
+	SnManipulator* player = rootg()->get<SnManipulator>(20);
+>>>>>>> parent of d9a975d... Idle animation for COral
 	GsMat pMat = player->mat();
 	pMat.rotz(rr * degrees);
 	player->initial_mat(pMat);
@@ -459,7 +494,14 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 		moveNPC(-1, -1, -1);
 		return 1;
 	}
+<<<<<<< HEAD
 
+=======
+	case GsEvent::KeyLeft: {
+		animateCoral(-1);
+		return 1;
+	}
+>>>>>>> parent of d9a975d... Idle animation for COral
 	case GsEvent::KeyUp: {
 		return 1;
 	}
