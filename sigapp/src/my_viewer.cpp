@@ -14,6 +14,7 @@
 3. NON trivial Animation on ALL fishes
 4. Automated Movements for NPC Fishes
 5. Collision Detection
+7. Add water?
 */
 
 
@@ -22,8 +23,12 @@ double py = 0.0;
 double pz = 0.0;
 double x, y, z = 0.0;
 double npcC[3][4]; // coordinates, X,Y,Z, i=0->3 First is Coord (x,y,z), Second is the Fish
+//0 faces -Z, 1 faces +X, 2 faces +Z, 3 faces -X
 float degrees = (float)GS_PI / 180;
 float theta[1] = { 0.0 };
+//Slowly rotate coral by incrementing this variable
+float rr = 0;
+float rr2 = 0;
 
 float dirX = 0;
 float dirY;
@@ -184,6 +189,11 @@ void MyViewer::moveNPC(float a, float b, float c) {
 	}
 }
 
+bool MyViewer::checkCollision() {
+
+	return true;
+}
+
 void MyViewer::build_scene()
 {
 	rootg()->remove_all();
@@ -203,17 +213,17 @@ void MyViewer::build_scene()
 	npcC[1][0] = 250;
 	npcC[2][0] = 250;
 	//Fish 1
-	npcC[0][1] = -250;
+	npcC[0][1] = 250;
 	npcC[1][1] = 250;
 	npcC[2][1] = 250;
 	//Fish 2
-	npcC[0][2] = -250;
+	npcC[0][2] = 250;
 	npcC[1][2] = 250;
-	npcC[2][2] = -250;
+	npcC[2][2] = 250;
 	//Fish 3
 	npcC[0][3] = 250;
 	npcC[1][3] = 250;
-	npcC[2][3] = -250;
+	npcC[2][3] = 250;
 
 	// makes the fishes
 	const int npcNum = 4;
@@ -270,7 +280,32 @@ void MyViewer::build_scene()
 	add_model(pc, GsVec(x, y, z));
 
 	// BoxBox
-	SnPrimitive * p;
+	//SoftCoral with two parts
+	//29-30
+	SnModel* sc2 = new SnModel;
+	sc2->model()->load_obj("../reefObjs/softCoral/softCoralTop.obj");
+	GsModel* gssc2 = sc2->model();
+	gssc2->translate(GsVec(10, 10, 10));
+	gssc2->scale(scale);
+	add_model(sc2, GsVec(x, y, z));
+
+	//31-32
+	SnModel* sc3 = new SnModel;
+	sc3->model()->load_obj("../reefObjs/softCoral/softCoralBot.obj");
+	GsModel* gssc3 = sc3->model();
+	gssc3->translate(GsVec(10, 10, 10));
+	gssc3->scale(scale);
+	add_model(sc3, GsVec(x, y, z));
+
+	//Box
+	/*SnModel* box = new SnModel;
+	box->model()->load_obj("../reefObjs/Box/Aquarium.obj");
+	GsModel* gsbox = box->model();
+	gsbox->translate(GsVec(20, 20, 20));
+	gsbox->scale(scale);
+	add_model(box, GsVec(x, y, z));*/
+
+	SnPrimitive* p;
 	p = new SnPrimitive(GsPrimitive::Box, 45, 0.5, 45);
 	p->prim().material.diffuse = GsColor::lightblue;
 	GsModel * d = p->model();
@@ -287,7 +322,49 @@ void MyViewer::build_scene()
 	rootg()->add(w);
 }
 
-void MyViewer::moveChar(float a, float b, float c)
+void MyViewer::animateCoral(float a) 
+{
+	//float rotAmt;
+
+	/*if (rr2 == -3) {
+		rr = (float)(rr + 0.2);
+		rotAmt = (float)(rr);
+		if (rr >= 3) {
+			rr2 = 3;
+		}
+	}
+	else {
+		rr2= (float)(rr2-0.2);
+		rotAmt = (float)(rr2);
+		if (rr <= -3) {
+			rr2 = -3;
+			rr = -3;
+		}
+	}*/
+
+	if (a < 0)
+	{
+		if(rr <3) {
+			rr = (float)(rr + 0.2);
+		}
+	}
+	else
+	{
+		if (rr > -3) {
+			rr = (float)(rr - 0.2);
+		}
+	}
+
+
+	SnManipulator* player = rootg()->get<SnManipulator>(30);
+	GsMat pMat = player->mat();
+	pMat.rotz(rr * degrees);
+	player->initial_mat(pMat);
+	render();
+	ws_check();
+}
+
+void MyViewer::moveChar( float a, float b, float c)
 {
 	px += a;
 	py += b;
@@ -344,7 +421,7 @@ void MyViewer::animate()
 	} while (i < (2 * s));
 }
 
-int MyViewer::handle_keyboard(const GsEvent & e)
+int MyViewer::handle_keyboard(const GsEvent& e)
 {
 	int ret = WsViewer::handle_keyboard(e); // 1st let system check events
 	if (ret) return ret;
@@ -387,9 +464,8 @@ int MyViewer::handle_keyboard(const GsEvent & e)
 	case 'd': { // -Z
 		if (pz > -1000) {
 			moveChar(0, 0, -5);
+			return 1;
 		}
-		return 1;
-	}
 	case 'r': { // MOVE NPCs
 		moveNPC(1, 1, 1);
 		return 1;
@@ -399,12 +475,14 @@ int MyViewer::handle_keyboard(const GsEvent & e)
 		return 1;
 	}
 	case GsEvent::KeyLeft: {
+		animateCoral(-1);
 		return 1;
 	}
 	case GsEvent::KeyUp: {
 		return 1;
 	}
 	case GsEvent::KeyRight: {
+		animateCoral(1);
 		return 1;
 	}
 	case GsEvent::KeyDown: {
@@ -428,9 +506,9 @@ int MyViewer::handle_keyboard(const GsEvent & e)
 		} while (lt < 1.5f);
 	}
 	}
-	return 0;
+			  return 0;
+	}
 }
-
 int MyViewer::uievent(int e)
 {
 	switch (e)
