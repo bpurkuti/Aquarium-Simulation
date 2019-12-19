@@ -14,6 +14,7 @@
 3. NON trivial Animation on ALL fishes
 4. Automated Movements for NPC Fishes
 5. Collision Detection
+7. Add water?
 */
 
 
@@ -22,6 +23,7 @@ double py = 0.0;
 double pz = 0.0;
 double x, y, z = 0.0;
 double npcC[3][4]; // coordinates, X,Y,Z, i=0->3 First is Coord (x,y,z), Second is the Fish
+//0 faces -Z, 1 faces +X, 2 faces +Z, 3 faces -X
 float degrees = (float)GS_PI / 180;
 float theta[1] = { 0.0 };
 //Slowly rotate coral by incrementing this variable
@@ -34,10 +36,15 @@ float dirZ;
 //Default scale of the objs
 float scale = 40.0;
 
+//GsBox bounding box
+//of fish 1
+GsBox bb;
+//of softCoral
+GsBox bbsc;
 //These variables keep track of where the joints are
 float pi = 3.14f;
 float af = pi / 100;
-
+float lastState = 0;
 MyViewer::MyViewer(int x, int y, int w, int h, const char* l) : WsViewer(x, y, w, h, l)
 {
 	_nbut = 0;
@@ -144,7 +151,7 @@ void MyViewer::moveNPC(float a, float b, float c) {
 				}
 			}
 		}
-		if (dirY== 1) {
+		if (dirY == 1) {
 			if (npcC[1][j] < 250) {
 				npcC[1][j] += 5;
 				if (npcC[0][j] == 250) {
@@ -187,14 +194,15 @@ void MyViewer::moveNPC(float a, float b, float c) {
 	}
 }
 
-<<<<<<< HEAD
-=======
 bool MyViewer::checkCollision() {
-
-	return true;
+	//GsPnt center = bbsc.center;
+	if (bb.contains(bbsc.a))
+	{
+		return true;
+	}
+	return false;
 }
 
->>>>>>> parent of d9a975d... Idle animation for COral
 void MyViewer::build_scene()
 {
 	rootg()->remove_all();
@@ -203,6 +211,7 @@ void MyViewer::build_scene()
 	SnModel* playerFish = new SnModel;
 	playerFish->model()->load_obj("../reefObjs/PlayerFish/blackMoorFish.obj");
 	GsModel* pf = playerFish->model();
+	pf->get_bounding_box(bb);
 	pf->translate(GsVec(5, 5, 5));
 	pf->scale(scale);
 	add_model(playerFish, GsVec(px, py, pz));
@@ -214,17 +223,17 @@ void MyViewer::build_scene()
 	npcC[1][0] = 250;
 	npcC[2][0] = 250;
 	//Fish 1
-	npcC[0][1] = -250;
+	npcC[0][1] = 250;
 	npcC[1][1] = 250;
 	npcC[2][1] = 250;
 	//Fish 2
-	npcC[0][2] = -250;
+	npcC[0][2] = 250;
 	npcC[1][2] = 250;
-	npcC[2][2] = -250;
+	npcC[2][2] = 250;
 	//Fish 3
 	npcC[0][3] = 250;
 	npcC[1][3] = 250;
-	npcC[2][3] = -250;
+	npcC[2][3] = 250;
 
 	// makes the fishes
 	const int npcNum = 4;
@@ -249,18 +258,11 @@ void MyViewer::build_scene()
 	add_model(tc1, GsVec(x, y, z));
 
 	//Soft Coral
-<<<<<<< HEAD
-	SnModel* sc = new SnModel;
-	sc->model()->load_obj("../reefObjs/softCoral/softCoral.obj");
-	GsModel* gssc = sc->model();
-	gssc->translate(GsVec(-10, -10, -10));
-	gssc->scale(scale);
-	add_model(sc, GsVec(x, y, z));
-=======
 	//20
 	SnModel* sc2 = new SnModel;
 	sc2->model()->load_obj("../reefObjs/softCoral/softCoralTop.obj");
 	GsModel* gssc2 = sc2->model();
+	gssc2->get_bounding_box(bbsc);
 	gssc2->translate(GsVec(-13, -10, -5));
 	gssc2->scale(scale);
 	add_model(sc2, GsVec(x, y, z));
@@ -272,28 +274,27 @@ void MyViewer::build_scene()
 	gssc3->translate(GsVec(-13, -10, -5));
 	gssc3->scale(scale);
 	add_model(sc3, GsVec(x, y, z));
->>>>>>> parent of d9a975d... Idle animation for COral
 
 	// TreeCoral
-	SnModel * tc2 = new SnModel;
+	SnModel* tc2 = new SnModel;
 	tc2->model()->load_obj("../reefObjs/TreeCoral1/treeCoral1.obj");
-	GsModel * gstc2 = tc2->model();
+	GsModel* gstc2 = tc2->model();
 	gstc2->translate(GsVec(-15, -10, 0));
 	gstc2->scale(scale);
 	add_model(tc2, GsVec(x, y, z));
 
 	// Spiral Wire Coral
-	SnModel * swc = new SnModel;
+	SnModel* swc = new SnModel;
 	swc->model()->load_obj("../reefObjs/spiralWireCoral/spiralWireCoral.obj");
-	GsModel * gsswc = swc->model();
+	GsModel* gsswc = swc->model();
 	gsswc->translate(GsVec(13, -10, -2));
 	gsswc->scale(scale);
 	add_model(swc, GsVec(x, y, z));
 
 	// PillarCoral
-	SnModel * pc = new SnModel;
+	SnModel* pc = new SnModel;
 	pc->model()->load_obj("../reefObjs/pillarCoral/pillarCoral.obj");
-	GsModel * gspc = pc->model();
+	GsModel* gspc = pc->model();
 	gspc->translate(GsVec(15, -10, 5));
 	gspc->scale(scale);
 	add_model(pc, GsVec(x, y, z));
@@ -301,20 +302,20 @@ void MyViewer::build_scene()
 	// BoxBox
 	//SoftCoral with two parts
 	//29-30
-	SnModel* sc2 = new SnModel;
-	sc2->model()->load_obj("../reefObjs/softCoral/softCoralTop.obj");
-	GsModel* gssc2 = sc2->model();
-	gssc2->translate(GsVec(10, 10, 10));
-	gssc2->scale(scale);
-	add_model(sc2, GsVec(x, y, z));
+	//SnModel* sc2 = new SnModel;
+	//sc2->model()->load_obj("../reefObjs/softCoral/softCoralTop.obj");
+	//GsModel* gssc2 = sc2->model();
+	//gssc2->translate(GsVec(10, 10, 10));
+	//gssc2->scale(scale);
+	//add_model(sc2, GsVec(x, y, z));
 
-	//31-32
-	SnModel* sc3 = new SnModel;
-	sc3->model()->load_obj("../reefObjs/softCoral/softCoralBot.obj");
-	GsModel* gssc3 = sc3->model();
-	gssc3->translate(GsVec(10, 10, 10));
-	gssc3->scale(scale);
-	add_model(sc3, GsVec(x, y, z));
+	////31-32
+	//SnModel* sc3 = new SnModel;
+	//sc3->model()->load_obj("../reefObjs/softCoral/softCoralBot.obj");
+	//GsModel* gssc3 = sc3->model();
+	//gssc3->translate(GsVec(10, 10, 10));
+	//gssc3->scale(scale);
+	//add_model(sc3, GsVec(x, y, z));
 
 	//Box
 	/*SnModel* box = new SnModel;
@@ -327,55 +328,58 @@ void MyViewer::build_scene()
 	SnPrimitive* p;
 	p = new SnPrimitive(GsPrimitive::Box, 45, 0.5, 45);
 	p->prim().material.diffuse = GsColor::lightblue;
-	GsModel * d = p->model();
+	GsModel* d = p->model();
 	d->translate(GsVec(0, -400, 0));
 	d->scale(scale);
 	rootg()->add(p);
 
-	SnPrimitive * w;
+	SnPrimitive* w;
 	w = new SnPrimitive(GsPrimitive::Box, 45, 18, 0.5);
 	w->prim().material.diffuse = GsColor::yellow;
-	GsModel * x = w->model();
+	GsModel* x = w->model();
 	x->translate(GsVec(0, 300, -1000));
 	x->scale(scale);
 	rootg()->add(w);
 }
 
-
-void MyViewer :: animateCoral(float a) 
+void MyViewer::animateCoral(float a)
 {
-<<<<<<< HEAD
-=======
 	//right key
 	//and left key
->>>>>>> parent of d9a975d... Idle animation for COral
-	if (a < 0)
-	{
-		if(rr <3) {
-			rr = (float)(rr + 0.2);
-		}
-	}
-	else
-	{
-		if (rr > -3) {
-			rr = (float)(rr - 0.2);
-		}
-	}
+	//if (a < 0)
+	//{
+	//	if(rr <3) {
+	//		rr = (float)(rr + 0.2);
+	//	}
+	//}
+	//else
+	//{
+	//	if (rr > -3) {
+	//		rr = (float)(rr - 0.2);
+	//	}
+	//}
 
-
-<<<<<<< HEAD
-	SnManipulator* player = rootg()->get<SnManipulator>(30);
-=======
-	SnManipulator* player = rootg()->get<SnManipulator>(20);
->>>>>>> parent of d9a975d... Idle animation for COral
+	if (rr >= 3) {
+		lastState = 3;
+	}
+	if (lastState == 0) {
+		rr = (float)(rr + 0.2);
+	}
+	if (lastState == 3) {
+		rr = (float)(rr - 0.2);
+	}
+	if (rr <= -3) {
+		lastState = 0;
+	}
+	SnManipulator* player = rootg()->get<SnManipulator>(12);
 	GsMat pMat = player->mat();
-	pMat.rotz(rr * degrees);
+	pMat.roty(rr * degrees);
 	player->initial_mat(pMat);
 	render();
 	ws_check();
 }
 
-void MyViewer::moveChar( float a, float b, float c)
+void MyViewer::moveChar(float a, float b, float c)
 {
 	px += a;
 	py += b;
@@ -404,7 +408,7 @@ void MyViewer::animate()
 	GsMat m = manip->mat();
 
 	double s = 20;
-	
+
 	double frdt = 1.0 / (s); // delta time to reach given number of frames per second
 	double t = 0, lt = 0, t0 = gs_time();
 
@@ -416,13 +420,13 @@ void MyViewer::animate()
 		lt = t;
 		//gsout << i << gsnl;
 		if (i < s) { // rotate arm to interpolated angle
-		
-			moveNPC(1,1,1);
+
+			moveNPC(1, 1, 1);
 			i++;
 			//gsout << "interpolate " << i << gsnl;
 		}
 		else if (i < (2 * s)) { // rotate arm to interpolated angle
-			
+
 			moveNPC(1, 1, 1);
 			i++;
 			//gsout << "interpolate " << i << gsnl;
@@ -444,24 +448,28 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 
 	case 'q': { // +X
 		if (px < 1000) {
+			checkCollision();
 			moveChar(5, 0, 0);
 		}
 		return 1;
 	}
 	case 'a': { // -X
 		if (px > -1000) {
+			checkCollision();
 			moveChar(-5, 0, 0);
 		}
 		return 1;
 	}
 	case 'w': { // +Y
 		if (py < 700) {
+			checkCollision();
 			moveChar(0, 5, 0);
 		}
 		return 1;
 	}
 	case 's': { // -Y
 		if (py > -500) {
+			checkCollision();
 			moveChar(0, -5, 0);
 		}
 		return 1;
@@ -475,16 +483,7 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 	case 'd': { // -Z
 		if (pz > -1000) {
 			moveChar(0, 0, -5);
-	case GsEvent::KeyLeft: {
-		animateCoral(-1);
-		return 1;
-	}
-	case GsEvent::KeyRight: {
-		animateCoral(1);
-
-		return 1;
-	}
-							return 1;
+			return 1;
 		}
 	case 'r': { // MOVE NPCs
 		moveNPC(1, 1, 1);
@@ -494,15 +493,30 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 		moveNPC(-1, -1, -1);
 		return 1;
 	}
-<<<<<<< HEAD
 
-=======
+			  //case 'j': {
+			  //	if (checkCollision() == true)
+			  //	{
+			  //		message().setf("Collision= True");
+			  //		message().setf("BoundingBoxPoint %f", bb.a);
+			  //	}
+			  //	else
+			  //	{
+			  //		message().setf("Collision= False");
+			  //		message().setf("BoundingBoxPoint %f", bb.a, bb.b);
+
+			  //	}
+			  //	return 1;
+			  //}
 	case GsEvent::KeyLeft: {
 		animateCoral(-1);
 		return 1;
 	}
->>>>>>> parent of d9a975d... Idle animation for COral
 	case GsEvent::KeyUp: {
+		return 1;
+	}
+	case GsEvent::KeyRight: {
+		animateCoral(1);
 		return 1;
 	}
 	case GsEvent::KeyDown: {
@@ -515,21 +529,23 @@ int MyViewer::handle_keyboard(const GsEvent& e)
 		double lt, t0 = gs_time();
 		do
 		{
+			moveNPC(-1, -1, -1);
+			animateCoral(-1);
+
 			lt = gs_time() - t0;
 
-			camera().eye.y += 2.5f;
-			camera().eye.z -= 3.0f;
-			camera().up.z += 0.001f;
-			render();
-			ws_check();
-			message().setf("local time=%f", lt);
-		} while (lt < 1.5f);
+			//camera().eye.y += 2.5f;
+			//camera().eye.z -= 3.0f;
+			//camera().up.z += 0.001f;
+			//render();
+			//ws_check();
+			//message().setf("local time=%f", lt);
+		} while (lt < 15);
 	}
 	}
 			  return 0;
 	}
 }
-
 int MyViewer::uievent(int e)
 {
 	switch (e)
