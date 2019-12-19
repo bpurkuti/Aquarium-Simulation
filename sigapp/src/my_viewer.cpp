@@ -199,12 +199,21 @@ void MyViewer::build_scene()
 	add_model(tc1, GsVec(x, y, z));
 
 	//Soft Coral
-	SnModel* sc = new SnModel;
-	sc->model()->load_obj("../reefObjs/softCoral/softCoral.obj");
-	GsModel* gssc = sc->model();
-	gssc->translate(GsVec(-10, -10, -10));
-	gssc->scale(scale);
-	add_model(sc, GsVec(x, y, z));
+	//20
+	SnModel* sc2 = new SnModel;
+	sc2->model()->load_obj("../reefObjs/softCoral/softCoralTop.obj");
+	GsModel* gssc2 = sc2->model();
+	gssc2->translate(GsVec(-13, -10, -5));
+	gssc2->scale(scale);
+	add_model(sc2, GsVec(x, y, z));
+
+	//22
+	SnModel* sc3 = new SnModel;
+	sc3->model()->load_obj("../reefObjs/softCoral/softCoralBot.obj");
+	GsModel* gssc3 = sc3->model();
+	gssc3->translate(GsVec(-13, -10, -5));
+	gssc3->scale(scale);
+	add_model(sc3, GsVec(x, y, z));
 
 	// TreeCoral
 	SnModel* tc2 = new SnModel;
@@ -232,20 +241,20 @@ void MyViewer::build_scene()
 
 	//SoftCoral with two parts
 	//29-30
-	SnModel* sc2 = new SnModel;
-	sc2->model()->load_obj("../reefObjs/softCoral/softCoralTop.obj");
-	GsModel* gssc2 = sc2->model();
-	gssc2->translate(GsVec(10, 10, 10));
-	gssc2->scale(scale);
-	add_model(sc2, GsVec(x, y, z));
+	//SnModel* sc2 = new SnModel;
+	//sc2->model()->load_obj("../reefObjs/softCoral/softCoralTop.obj");
+	//GsModel* gssc2 = sc2->model();
+	//gssc2->translate(GsVec(10, 10, 10));
+	//gssc2->scale(scale);
+	//add_model(sc2, GsVec(x, y, z));
 
-	//31-32
-	SnModel* sc3 = new SnModel;
-	sc3->model()->load_obj("../reefObjs/softCoral/softCoralBot.obj");
-	GsModel* gssc3 = sc3->model();
-	gssc3->translate(GsVec(10, 10, 10));
-	gssc3->scale(scale);
-	add_model(sc3, GsVec(x, y, z));
+	////31-32
+	//SnModel* sc3 = new SnModel;
+	//sc3->model()->load_obj("../reefObjs/softCoral/softCoralBot.obj");
+	//GsModel* gssc3 = sc3->model();
+	//gssc3->translate(GsVec(10, 10, 10));
+	//gssc3->scale(scale);
+	//add_model(sc3, GsVec(x, y, z));
 
 	//Box
 	/*SnModel* box = new SnModel;
@@ -277,24 +286,8 @@ void MyViewer::build_scene()
 
 void MyViewer :: animateCoral(float a) 
 {
-	//float rotAmt;
-
-	/*if (rr2 == -3) {
-		rr = (float)(rr + 0.2);
-		rotAmt = (float)(rr);
-		if (rr >= 3) {
-			rr2 = 3;
-		}
-	}
-	else {
-		rr2= (float)(rr2-0.2);
-		rotAmt = (float)(rr2);
-		if (rr <= -3) {
-			rr2 = -3;
-			rr = -3;
-		}
-	}*/
-
+	//right key
+	//and left key
 	if (a < 0)
 	{
 		if(rr <3) {
@@ -309,7 +302,7 @@ void MyViewer :: animateCoral(float a)
 	}
 
 
-	SnManipulator* player = rootg()->get<SnManipulator>(30);
+	SnManipulator* player = rootg()->get<SnManipulator>(20);
 	GsMat pMat = player->mat();
 	pMat.rotz(rr * degrees);
 	player->initial_mat(pMat);
